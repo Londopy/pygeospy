@@ -1,0 +1,83 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.dylib
+*.dll
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+.Python
+pip-wheel-metadata/
+*.whl
+*.tar.gz
+
+# Rust / Cargo
+_rustcore/target/
+_rustcore/Cargo.lock
+*.rlib
+*.rmeta
+
+# Maturin / PyO3 build artefacts
+_rustcore*.so
+_rustcore*.pyd
+_rustcore*.dylib
+
+# Test / coverage
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.coveragerc
+
+# Type checking
+.mypy_cache/
+.ruff_cache/
+pyrightconfig.json
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Docs
+site/
+docs/_build/
+
+# geoint runtime artefacts
+geoint_output/
+*.gpx
+*.kml
+*.kmz
+*.geojson
+*_map.html
+*_report.html
+*_report.md
+
+# API keys / secrets — NEVER commit these
+.env
+.env.*
+secrets.json
+api_keys.txt
+
+# DEM / raster data (can be very large)
+*.tif
+*.tiff
+*.img
+*.nc
+
+# Cache
+.cache/
+~/.cache/geoint/

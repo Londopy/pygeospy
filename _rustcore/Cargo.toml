@@ -1,0 +1,24 @@
+[package]
+name = "_rustcore"
+version = "0.1.0"
+edition = "2021"
+description = "High-performance Rust core for the geoint GEOINT/OSINT library"
+authors = ["geoint contributors"]
+license = "MIT"
+
+[lib]
+name = "_rustcore"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.21", features = ["extension-module"] }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+opt-level = 0
+debug = true
