@@ -1,5 +1,5 @@
 """
-geoint.sar — Search and Rescue grid generation and field operations.
+pygeospy.sar — Search and Rescue grid generation and field operations.
 Rust core handles polygon math; Python handles GPX export and
 lost-person profile logic.
 """
@@ -10,10 +10,10 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from geoint._utils import rustcore
-from geoint._types import LatLon, BoundingBox
+from pygeospy._utils import rustcore
+from pygeospy._types import LatLon, BoundingBox
 
-logger = logging.getLogger("geoint.sar")
+logger = logging.getLogger("pygeospy.sar")
 _SAR = rustcore("sar")
 
 

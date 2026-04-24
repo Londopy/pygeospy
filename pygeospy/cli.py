@@ -1,17 +1,17 @@
 """
-geoint CLI — command-line interface built with Typer.
+pygeospy CLI — command-line interface built with Typer.
 
 Usage examples
 --------------
-  geoint analyze photo.jpg
-  geoint analyze photo.jpg --shadow-ratio 2.5 --shadow-azimuth 195 --export
-  geoint analyze --ip 8.8.8.8
-  geoint solar --lat 51.5 --lon -0.1 --doy 172 --hour 14
-  geoint coords haversine 51.5 -0.1 48.85 2.35
-  geoint exif photo.jpg
-  geoint sar grid --lat 47.6 --lon -122.3 --radius 3.0 --cell 0.5
-  geoint cache clear
-  geoint info
+  pygeospy analyze photo.jpg
+  pygeospy analyze photo.jpg --shadow-ratio 2.5 --shadow-azimuth 195 --export
+  pygeospy analyze --ip 8.8.8.8
+  pygeospy solar --lat 51.5 --lon -0.1 --doy 172 --hour 14
+  pygeospy coords haversine 51.5 -0.1 48.85 2.35
+  pygeospy exif photo.jpg
+  pygeospy sar grid --lat 47.6 --lon -122.3 --radius 3.0 --cell 0.5
+  pygeospy cache clear
+  pygeospy info
 """
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ except ImportError:
     print("typer and rich are required for the CLI: pip install typer rich", file=sys.stderr)
     sys.exit(1)
 
-app     = typer.Typer(help="geoint — GEOINT/OSINT analysis toolkit", pretty_exceptions_show_locals=False)
+app     = typer.Typer(help="pygeospy — GEOINT/OSINT analysis toolkit", pretty_exceptions_show_locals=False)
 console = Console()
 
 # ── Sub-command groups ────────────────────────────────────────────────────────
@@ -57,14 +57,14 @@ def analyze(
     shadow_azimuth: Optional[float] = typer.Option(None, "--shadow-azimuth", "-sa", help="Shadow azimuth (degrees, 0=N)"),
     vision_backend: str             = typer.Option("none", "--vision",        help="Vision backend: none/claude/gpt4v/llava"),
     export:     bool            = typer.Option(False, "--export",          help="Export all formats"),
-    output_dir: str             = typer.Option("geoint_output", "--out",   help="Output directory for exports"),
+    output_dir: str             = typer.Option("pygeospy_output", "--out",   help="Output directory for exports"),
     parallel:   bool            = typer.Option(True,  "--parallel/--serial", help="Parallel module execution"),
     quiet:      bool            = typer.Option(False, "--quiet", "-q",     help="Suppress output except results"),
 ):
     """
     Analyze an image, audio file, IP, or text and produce a GeoResult.
     """
-    from geoint.pipeline import analyze as _analyze
+    from pygeospy.pipeline import analyze as _analyze
 
     target = ip or input_path
     if not target:
@@ -135,7 +135,7 @@ def coords_haversine(
     lat2: float = typer.Argument(...), lon2: float = typer.Argument(...),
 ):
     """Haversine distance between two coordinates (km)."""
-    from geoint.coords import haversine
+    from pygeospy.coords import haversine
     d = haversine(lat1, lon1, lat2, lon2)
     console.print(f"Distance: [bold]{d:.3f} km[/bold] ({d*0.621371:.3f} miles)")
 
@@ -146,8 +146,8 @@ def coords_bearing(
     lat2: float = typer.Argument(...), lon2: float = typer.Argument(...),
 ):
     """Initial bearing from point 1 → point 2."""
-    from geoint.coords import bearing
-    from geoint._utils import bearing_to_cardinal
+    from pygeospy.coords import bearing
+    from pygeospy._utils import bearing_to_cardinal
     b = bearing(lat1, lon1, lat2, lon2)
     console.print(f"Bearing: [bold]{b:.2f}°[/bold] ({bearing_to_cardinal(b)})")
 
@@ -158,7 +158,7 @@ def coords_convert(
     fmt: str   = typer.Option("all", "--fmt", help="dd / dms / utm / mgrs / plus"),
 ):
     """Convert coordinates to different formats."""
-    from geoint import coords
+    from pygeospy import coords
     fmts = ["dd", "dms", "utm", "mgrs"] if fmt == "all" else [fmt]
     for f in fmts:
         try:
@@ -173,7 +173,7 @@ def coords_bbox(
     radius: float = typer.Argument(..., help="Radius in km"),
 ):
     """Bounding box around a centre point."""
-    from geoint.coords import bounding_box
+    from pygeospy.coords import bounding_box
     bb = bounding_box(lat, lon, radius)
     console.print(f"SW: {bb.min_lat:.5f}, {bb.min_lon:.5f}")
     console.print(f"NE: {bb.max_lat:.5f}, {bb.max_lon:.5f}")
@@ -189,8 +189,8 @@ def solar_position(
     hour: float = typer.Argument(..., help="UTC hour (0-24)"),
 ):
     """Calculate sun position at a location and time."""
-    from geoint.solar import solar_elevation, solar_azimuth, shadow_azimuth, shadow_length_ratio
-    from geoint._utils import bearing_to_cardinal
+    from pygeospy.solar import solar_elevation, solar_azimuth, shadow_azimuth, shadow_length_ratio
+    from pygeospy._utils import bearing_to_cardinal
     el  = solar_elevation(lat, lon, doy, hour)
     az  = solar_azimuth(lat, lon, doy, hour)
     sh_az = shadow_azimuth(az)
@@ -209,7 +209,7 @@ def solar_from_shadow(
     hour:    float = typer.Option(12.0, "--hour", help="UTC hour hint"),
 ):
     """Infer latitude bands from shadow ratio and azimuth."""
-    from geoint.solar import latitude_band_from_shadow
+    from pygeospy.solar import latitude_band_from_shadow
     solar = latitude_band_from_shadow(ratio, azimuth, doy, hour)
     console.print(f"Sun elevation: {solar.sun_elevation:.2f}°")
     console.print(f"Sun azimuth:   {solar.sun_azimuth:.2f}°")
@@ -231,7 +231,7 @@ def exif_extract(
     json_out: bool = typer.Option(False, "--json", help="Output raw JSON"),
 ):
     """Extract EXIF metadata from an image."""
-    from geoint.exif import extract, forensic_flags
+    from pygeospy.exif import extract, forensic_flags
     import json
     r = extract(image)
     if json_out:
@@ -257,7 +257,7 @@ def exif_batch(
     map_out:   str = typer.Option("", "--map", help="HTML map output (optional)"),
 ):
     """Batch extract EXIF from all images in a directory."""
-    from geoint.exif import batch_extract, map_gps_points
+    from pygeospy.exif import batch_extract, map_gps_points
     results = batch_extract(directory)
     with_gps = [r for r in results if r.get("has_gps")]
     console.print(f"Processed {len(results)} images, {len(with_gps)} have GPS.")
@@ -284,7 +284,7 @@ def sar_grid(
     gpx:    str   = typer.Option("", "--gpx", help="Also export GPX"),
 ):
     """Generate a NASAR search grid."""
-    from geoint.sar import search_grid, to_geojson, grid_to_gpx
+    from pygeospy.sar import search_grid, to_geojson, grid_to_gpx
     features = search_grid(lat, lon, radius, cell)
     to_geojson(features, out)
     console.print(f"[green]Grid saved:[/green] {out} ({len(features)} cells)")
@@ -303,7 +303,7 @@ def sar_urgency(
     terrain: bool  = typer.Option(False, "--terrain", help="Difficult terrain"),
 ):
     """Calculate SAR urgency score."""
-    from geoint.sar import urgency_score
+    from pygeospy.sar import urgency_score
     score = urgency_score(age, medical, hours, night, weather, terrain)
     color = "red" if score["score"] >= 6 else "yellow" if score["score"] >= 4 else "green"
     console.print(f"Urgency score: [{color}]{score['score']}/10[/{color}] — {score['priority']}")
@@ -314,7 +314,7 @@ def sar_urgency(
 @cache_app.command("stats")
 def cache_stats():
     """Show disk cache statistics."""
-    from geoint._cache import _caches, get_cache
+    from pygeospy._cache import _caches, get_cache
     namespaces = ["elevation", "geocode", "reverse_geo", "ip_geo", "osm_features",
                   "osm_bbox", "osm_boundary", "dem", "timezone", "sentinel_products"]
     t = Table(title="Cache Statistics")
@@ -329,7 +329,7 @@ def cache_stats():
 @cache_app.command("clear")
 def cache_clear(namespace: Optional[str] = typer.Argument(None, help="Namespace to clear (all if omitted)")):
     """Clear cached API responses."""
-    from geoint._cache import get_cache
+    from pygeospy._cache import get_cache
     namespaces = [namespace] if namespace else [
         "elevation", "geocode", "reverse_geo", "ip_geo", "osm_features",
         "osm_bbox", "osm_boundary", "dem", "timezone", "sentinel_products",
@@ -345,8 +345,8 @@ def cache_clear(namespace: Optional[str] = typer.Argument(None, help="Namespace 
 @app.command("info")
 def info():
     """Show geoint version and Rust core status."""
-    import geoint
-    from geoint._utils import RUST_AVAILABLE
+    import pygeospy
+    from pygeospy._utils import RUST_AVAILABLE
     console.print(f"[bold]geoint[/bold] v{geoint.__version__}")
     status = "[green]✓ available[/green]" if RUST_AVAILABLE else "[yellow]✗ not compiled[/yellow]"
     console.print(f"Rust core (_rustcore): {status}")

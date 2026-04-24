@@ -1,5 +1,5 @@
 """
-geoint.export — Maps, reports, and file exports from any module.
+pygeospy.export — Maps, reports, and file exports from any module.
 Pure Python: Folium, Jinja2, geopandas.
 """
 from __future__ import annotations
@@ -10,9 +10,9 @@ import os
 from pathlib import Path
 from typing import Optional, Any
 
-from geoint._types import GeoResult, CandidateLocation, LatLon
+from pygeospy._types import GeoResult, CandidateLocation, LatLon
 
-logger = logging.getLogger("geoint.export")
+logger = logging.getLogger("pygeospy.export")
 
 # ── Folium interactive map ─────────────────────────────────────────────────────
 
@@ -367,7 +367,7 @@ def markdown_report(result: GeoResult, output_path: str = "geoint_report.md") ->
 def export_all(
     result: GeoResult,
     output_dir: str = ".",
-    prefix: str = "geoint",
+    prefix: str = "pygeospy",
 ) -> dict[str, str]:
     """
     Export a GeoResult to all formats: HTML report, GeoJSON, KML, GPX, and map.

@@ -5,7 +5,7 @@ build-backend = "maturin"
 # ── Project metadata ──────────────────────────────────────────────────────────
 
 [project]
-name            = "geoint"
+name            = "pygeospy"
 version         = "0.2.0"
 description     = "Python GEOINT/OSINT library with Rust-accelerated core"
 readme          = "README.md"
@@ -119,22 +119,22 @@ acoustic = [
 
 # Full install — everything
 all = [
-    "geoint[coords,exif,terrain,osm,geo,sar,export,visual,language,satellite,acoustic]",
+    "pygeospy[coords,exif,terrain,osm,geo,sar,export,visual,language,satellite,acoustic]",
 ]
 
 # ── CLI entry point ───────────────────────────────────────────────────────────
 
 [project.scripts]
-geoint = "geoint.cli:main"
+pygeospy = "pygeospy.cli:main"
 
 # ── Maturin / Rust extension config ──────────────────────────────────────────
 
 [tool.maturin]
-python-source    = "."           # Python package is in geoint/
+python-source    = "."           # Python package is in pygeospy/
 manifest-path    = "_rustcore/Cargo.toml"
 module-name      = "_rustcore"
 features         = ["pyo3/extension-module"]
-# The compiled .so is placed at geoint/_rustcore.*.so after `maturin develop`
+# The compiled .so is placed at pygeospy/_rustcore.*.so after `maturin develop`
 
 # ── pytest ────────────────────────────────────────────────────────────────────
 
@@ -154,7 +154,7 @@ select      = ["E", "F", "W", "I"]
 ignore      = ["E501"]
 
 [tool.ruff.isort]
-known-first-party = ["geoint"]
+known-first-party = ["pygeospy"]
 
 # ── mypy ──────────────────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
 """
-geoint.chronos — Temporal analysis: when was this taken?
+pygeospy.chronos — Temporal analysis: when was this taken?
 Combines shadow analysis, vegetation state, weather archive, and metadata hints.
 """
 from __future__ import annotations
@@ -9,10 +9,10 @@ import math
 from datetime import datetime, timezone
 from typing import Optional
 
-from geoint._types import Clue
-from geoint.solar import elevation_from_shadow, solar_elevation, sunrise_sunset
+from pygeospy._types import Clue
+from pygeospy.solar import elevation_from_shadow, solar_elevation, sunrise_sunset
 
-logger = logging.getLogger("geoint.chronos")
+logger = logging.getLogger("pygeospy.chronos")
 
 
 # ── Time-of-day from shadow ───────────────────────────────────────────────────
@@ -190,7 +190,7 @@ def estimate_street_view_year(image_path: str) -> Optional[int]:
     Returns approximate year or None.
     """
     try:
-        from geoint.exif import extract
+        from pygeospy.exif import extract
         exif = extract(image_path)
         if exif.timestamp:
             ts = exif.timestamp
@@ -232,7 +232,7 @@ def analyze(
     # EXIF timestamp
     if image_path:
         try:
-            from geoint.exif import extract
+            from pygeospy.exif import extract
             exif = extract(image_path)
             if exif.timestamp:
                 clues.append(Clue("chronos", "exif_timestamp", exif.timestamp, 0.9,

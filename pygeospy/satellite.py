@@ -1,5 +1,5 @@
 """
-geoint.satellite — Sentinel-2 open imagery download, NDVI, change detection.
+pygeospy.satellite — Sentinel-2 open imagery download, NDVI, change detection.
 Raster math delegated to _rustcore.raster for large arrays.
 """
 from __future__ import annotations
@@ -9,11 +9,11 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from geoint._utils import rustcore, retry
-from geoint._cache import cached
-from geoint._types import BoundingBox
+from pygeospy._utils import rustcore, retry
+from pygeospy._cache import cached
+from pygeospy._types import BoundingBox
 
-logger = logging.getLogger("geoint.satellite")
+logger = logging.getLogger("pygeospy.satellite")
 _R = rustcore("raster")
 
 

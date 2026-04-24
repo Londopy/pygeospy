@@ -1,5 +1,5 @@
 """
-geoint.language — Linguistic analysis: OCR, script detection, sign text geocoding.
+pygeospy.language — Linguistic analysis: OCR, script detection, sign text geocoding.
 """
 from __future__ import annotations
 
@@ -7,10 +7,10 @@ import logging
 import re
 from typing import Optional
 
-from geoint._types import Clue
-from geoint._cache import cached
+from pygeospy._types import Clue
+from pygeospy._cache import cached
 
-logger = logging.getLogger("geoint.language")
+logger = logging.getLogger("pygeospy.language")
 
 
 # ── Script detection ──────────────────────────────────────────────────────────
@@ -267,7 +267,7 @@ def ocr_and_geocode(image_path: str) -> list[dict]:
     OCR an image, extract place names, and geocode them.
     Returns a list of {"text": str, "lat": float, "lon": float} dicts.
     """
-    from geoint.geo import geocode
+    from pygeospy.geo import geocode
 
     text   = ocr_image(image_path)
     places = extract_place_names(text)
@@ -298,7 +298,7 @@ def analyze(image_path: str) -> dict:
 
     if text.strip():
         place_names = extract_place_names(text)
-        from geoint.geo import geocode
+        from pygeospy.geo import geocode
         for name in place_names[:5]:  # limit geocode calls
             loc = geocode(name)
             if loc:

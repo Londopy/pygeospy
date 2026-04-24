@@ -1,5 +1,5 @@
 """
-geoint.exif — EXIF metadata extraction, GPS parsing, and forensics.
+pygeospy.exif — EXIF metadata extraction, GPS parsing, and forensics.
 Pure Python (Pillow + exifread); no Rust needed — already fast enough.
 """
 from __future__ import annotations
@@ -11,10 +11,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
-from geoint._types import LatLon, ExifResult, Clue
-from geoint._utils import format_latlon
+from pygeospy._types import LatLon, ExifResult, Clue
+from pygeospy._utils import format_latlon
 
-logger = logging.getLogger("geoint.exif")
+logger = logging.getLogger("pygeospy.exif")
 
 
 # ── GPS conversion helpers ────────────────────────────────────────────────────

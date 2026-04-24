@@ -1,5 +1,5 @@
 """
-geoint.visual — Visual clue extraction from images.
+pygeospy.visual — Visual clue extraction from images.
 Supports pluggable vision backends: Claude, GPT-4V, LLaVA (offline), or rule-based.
 Returns structured Clue objects for the pipeline.
 """
@@ -11,9 +11,9 @@ import logging
 from pathlib import Path
 from typing import Optional, Any
 
-from geoint._types import Clue, GeoResult
+from pygeospy._types import Clue, GeoResult
 
-logger = logging.getLogger("geoint.visual")
+logger = logging.getLogger("pygeospy.visual")
 
 # ── Vision backend registry ───────────────────────────────────────────────────
 

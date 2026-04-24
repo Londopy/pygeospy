@@ -32,7 +32,7 @@ pub fn slope_aspect_impl(dem: &[Vec<f64>], cell_size: f64) -> (Vec<Vec<f64>>, Ve
 
             // Aspect: 0=N, 90=E, 180=S, 270=W
             let asp = dz_dx.atan2(-dz_dy).to_degrees();
-            aspect[r][c] = ((asp + 360.0) % 360.0);
+            aspect[r][c] = (asp + 360.0) % 360.0;
         }
     }
 
@@ -78,7 +78,7 @@ pub fn vector_ruggedness_measure_impl(
     let cols = slope_grid[0].len();
     let w = window as i32;
     let mut vrm = vec![vec![0.0_f64; cols]; rows];
-    let n = (2 * window + 1).pow(2) as f64;
+    let _n = (2 * window + 1).pow(2) as f64;
 
     for r in 0..rows {
         for c in 0..cols {
@@ -116,7 +116,7 @@ pub fn viewshed_impl(
     observer_row: usize,
     observer_col: usize,
     observer_height_m: f64,
-    cell_size_m: f64,
+    _cell_size_m: f64,
     max_range_cells: Option<usize>,
 ) -> Vec<Vec<bool>> {
     let rows = dem.len();

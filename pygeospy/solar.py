@@ -1,5 +1,5 @@
 """
-geoint.solar — Solar analysis and shadow-based geolocation.
+pygeospy.solar — Solar analysis and shadow-based geolocation.
 
 Core math delegated to _rustcore.solar; Python layer handles
 GeoJSON export, season classification, and cross-module data contracts.
@@ -10,8 +10,8 @@ import json
 import math
 from typing import Optional
 
-from geoint._utils import rustcore, bearing_to_cardinal
-from geoint._types import SolarResult, Clue, BoundingBox, LatLon
+from pygeospy._utils import rustcore, bearing_to_cardinal
+from pygeospy._types import SolarResult, Clue, BoundingBox, LatLon
 
 _S = rustcore("solar")
 

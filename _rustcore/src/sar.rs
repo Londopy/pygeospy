@@ -6,7 +6,7 @@ use pyo3::prelude::*;
 use std::f64::consts::PI;
 
 use crate::coords::{
-    destination_point_impl, haversine_distance_impl, bearing_impl,
+    destination_point_impl, bearing_impl,
 };
 
 const DEG2RAD: f64 = PI / 180.0;

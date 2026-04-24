@@ -30,7 +30,7 @@ def bowl_dem(n=9):
 # ── Slope and aspect ──────────────────────────────────────────────────────────
 
 def test_slope_flat_dem():
-    from geoint.terrain import slope_aspect
+    from pygeospy.terrain import slope_aspect
     dem = flat_dem()
     result = slope_aspect(dem, cell_size_m=30.0)
     # Interior cells should have ~0° slope
@@ -41,7 +41,7 @@ def test_slope_flat_dem():
 
 
 def test_slope_nonzero_on_gradient():
-    from geoint.terrain import slope_aspect
+    from pygeospy.terrain import slope_aspect
     dem    = sloped_dem()
     result = slope_aspect(dem, cell_size_m=30.0)
     slopes = result["slope"]
@@ -50,7 +50,7 @@ def test_slope_nonzero_on_gradient():
 
 
 def test_aspect_east_facing_slope():
-    from geoint.terrain import slope_aspect
+    from pygeospy.terrain import slope_aspect
     dem    = sloped_dem()  # increases E
     result = slope_aspect(dem, cell_size_m=30.0)
     aspects = result["aspect"]
@@ -65,7 +65,7 @@ def test_aspect_east_facing_slope():
 # ── TRI ───────────────────────────────────────────────────────────────────────
 
 def test_tri_flat_is_zero():
-    from geoint.terrain import terrain_ruggedness_index
+    from pygeospy.terrain import terrain_ruggedness_index
     dem = flat_dem()
     tri = terrain_ruggedness_index(dem)
     for r in range(1, 9):
@@ -74,7 +74,7 @@ def test_tri_flat_is_zero():
 
 
 def test_tri_increases_with_relief():
-    from geoint.terrain import terrain_ruggedness_index
+    from pygeospy.terrain import terrain_ruggedness_index
     flat_tri   = terrain_ruggedness_index(flat_dem())
     sloped_tri = terrain_ruggedness_index(sloped_dem())
     flat_mean   = sum(flat_tri[r][c] for r in range(1,9) for c in range(1,9)) / 64
@@ -85,14 +85,14 @@ def test_tri_increases_with_relief():
 # ── Viewshed ──────────────────────────────────────────────────────────────────
 
 def test_viewshed_observer_always_visible():
-    from geoint.terrain import viewshed
+    from pygeospy.terrain import viewshed
     dem = flat_dem()
     vs  = viewshed(dem, 5, 5, 1.8, 30.0)
     assert vs[5][5] is True
 
 
 def test_viewshed_flat_all_visible():
-    from geoint.terrain import viewshed
+    from pygeospy.terrain import viewshed
     dem = flat_dem(n=9)
     vs  = viewshed(dem, 4, 4, 1.8, 30.0)
     visible = sum(1 for r in vs for c in r if c)
@@ -100,7 +100,7 @@ def test_viewshed_flat_all_visible():
 
 
 def test_viewshed_blocked_by_ridge():
-    from geoint.terrain import viewshed
+    from pygeospy.terrain import viewshed
     # Build a DEM with a wall between observer (row 0) and target (row 8)
     dem = [[10.0]*10 for _ in range(10)]
     dem[4] = [100.0] * 10  # row 4 is a ridge at elevation 100
@@ -112,14 +112,14 @@ def test_viewshed_blocked_by_ridge():
 # ── Elevation profile ─────────────────────────────────────────────────────────
 
 def test_elevation_profile_length():
-    from geoint.terrain import elevation_profile
+    from pygeospy.terrain import elevation_profile
     dem = sloped_dem()
     profile = elevation_profile(dem, [(r, r) for r in range(5)])
     assert len(profile) == 5
 
 
 def test_elevation_profile_values():
-    from geoint.terrain import elevation_profile
+    from pygeospy.terrain import elevation_profile
     dem = sloped_dem(n=10)
     # Along diagonal — col increases → elevation increases
     profile = elevation_profile(dem, [(0, c) for c in range(5)])
@@ -129,7 +129,7 @@ def test_elevation_profile_values():
 # ── Focal mean ────────────────────────────────────────────────────────────────
 
 def test_focal_mean_preserves_flat():
-    from geoint.terrain import focal_mean
+    from pygeospy.terrain import focal_mean
     dem = flat_dem(value=50.0)
     out = focal_mean(dem, radius=2)
     for row in out:

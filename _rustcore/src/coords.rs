@@ -129,7 +129,7 @@ pub fn latlon_to_utm_impl(lat: f64, lon: f64) -> (f64, f64, i32, String) {
     let f = 1.0 / 298.257223563;
     let b = a * (1.0 - f);
     let e2 = (a * a - b * b) / (a * a);
-    let n  = (a - b) / (a + b);
+    let _n  = (a - b) / (a + b);
 
     let nu = a / (1.0 - e2 * latr.sin().powi(2)).sqrt();
     let k0 = 0.9996;

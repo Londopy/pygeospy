@@ -1,5 +1,5 @@
 """
-geoint.network — Network & digital OSINT: IP, BGP, Wi-Fi, email headers.
+pygeospy.network — Network & digital OSINT: IP, BGP, Wi-Fi, email headers.
 """
 from __future__ import annotations
 
@@ -7,11 +7,11 @@ import logging
 import re
 from typing import Optional
 
-from geoint._types import Clue, LatLon
-from geoint._cache import cached
-from geoint._utils import retry
+from pygeospy._types import Clue, LatLon
+from pygeospy._cache import cached
+from pygeospy._utils import retry
 
-logger = logging.getLogger("geoint.network")
+logger = logging.getLogger("pygeospy.network")
 
 
 # ── IP / ASN analysis ─────────────────────────────────────────────────────────
@@ -57,7 +57,7 @@ def is_vpn_or_proxy(ip: str) -> dict:
     Check if an IP is a known VPN/proxy/Tor exit node.
     Uses ip-api.com fields.
     """
-    from geoint.geo import ip_to_location
+    from pygeospy.geo import ip_to_location
     try:
         info = ip_to_location(ip)
         return {
@@ -171,7 +171,7 @@ def analyze_email_headers(headers_text: str) -> list[dict]:
     Full email header analysis: extract IPs and geolocate each.
     Returns list of {"ip": str, "country": str, "city": str, "type": str}.
     """
-    from geoint.geo import ip_to_location
+    from pygeospy.geo import ip_to_location
     ips = extract_ips_from_email_headers(headers_text)
     results = []
     for ip in ips[:5]:  # limit API calls
@@ -245,7 +245,7 @@ def analyze(target: str) -> dict:
     ip_pattern = r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$'
     if re.match(ip_pattern, target.strip()):
         # IP address analysis
-        from geoint.geo import ip_to_location
+        from pygeospy.geo import ip_to_location
         try:
             loc  = ip_to_location(target)
             asn  = ip_to_asn(target)

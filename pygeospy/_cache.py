@@ -1,5 +1,5 @@
 """
-geoint._cache — Persistent disk cache for API responses.
+pygeospy._cache — Persistent disk cache for API responses.
 Prevents hitting rate limits on repeat queries; respects TTL per-entry.
 """
 from __future__ import annotations
@@ -12,10 +12,10 @@ import time
 from pathlib import Path
 from typing import Any, Optional
 
-logger = logging.getLogger("geoint.cache")
+logger = logging.getLogger("pygeospy.cache")
 
-# Default location: ~/.cache/geoint/
-_DEFAULT_CACHE_DIR = Path.home() / ".cache" / "geoint"
+# Default location: ~/.cache/pygeospy/
+_DEFAULT_CACHE_DIR = Path.home() / ".cache" / "pygeospy"
 
 
 class DiskCache:

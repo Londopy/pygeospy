@@ -1,5 +1,5 @@
 """
-geoint.acoustic — Audio-based geographic signals (experimental).
+pygeospy.acoustic — Audio-based geographic signals (experimental).
 Bird species → range map, language/accent ID, siren classification.
 """
 from __future__ import annotations
@@ -7,9 +7,9 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from geoint._types import Clue
+from pygeospy._types import Clue
 
-logger = logging.getLogger("geoint.acoustic")
+logger = logging.getLogger("pygeospy.acoustic")
 
 
 # ── Bird species identification ───────────────────────────────────────────────

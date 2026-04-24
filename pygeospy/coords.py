@@ -1,5 +1,5 @@
 """
-geoint.coords — Coordinate toolkit.
+pygeospy.coords — Coordinate toolkit.
 
 Pure math delegated to _rustcore.coords when available; pure-Python fallback
 otherwise.  Heavy I/O (elevation API, timezone lookup) stays in Python.
@@ -9,9 +9,9 @@ from __future__ import annotations
 import math
 from typing import Optional
 
-from geoint._utils import rustcore, validate_latlon, format_latlon, retry
-from geoint._cache import cached
-from geoint._types import LatLon, BoundingBox
+from pygeospy._utils import rustcore, validate_latlon, format_latlon, retry
+from pygeospy._cache import cached
+from pygeospy._types import LatLon, BoundingBox
 
 # Rust sub-module (may be None if not compiled)
 _C = rustcore("coords")

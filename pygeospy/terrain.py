@@ -1,5 +1,5 @@
 """
-geoint.terrain — DEM-based terrain analysis.
+pygeospy.terrain — DEM-based terrain analysis.
 
 Rust core handles grid math (slope, TRI, viewshed).
 Python layer manages DEM download, rasterio I/O, and export.
@@ -11,11 +11,11 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from geoint._utils import rustcore, validate_latlon, retry
-from geoint._cache import cached
-from geoint._types import TerrainResult, BoundingBox
+from pygeospy._utils import rustcore, validate_latlon, retry
+from pygeospy._cache import cached
+from pygeospy._types import TerrainResult, BoundingBox
 
-logger = logging.getLogger("geoint.terrain")
+logger = logging.getLogger("pygeospy.terrain")
 _T = rustcore("terrain")
 
 

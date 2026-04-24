@@ -1,5 +1,5 @@
 """
-geoint._utils — Shared utilities used across all modules.
+pygeospy._utils — Shared utilities used across all modules.
 """
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import functools
 import logging
 from typing import Any, Callable, Optional
 
-logger = logging.getLogger("geoint")
+logger = logging.getLogger("pygeospy")
 
 
 # ── Graceful Rust import ──────────────────────────────────────────────────────

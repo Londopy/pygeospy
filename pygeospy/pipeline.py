@@ -1,5 +1,5 @@
 """
-geoint.pipeline — Unified analysis engine.
+pygeospy.pipeline — Unified analysis engine.
 Single entry point: geoint.pipeline.analyze(input) → GeoResult
 
 Chains all modules together, runs in parallel where possible,
@@ -14,10 +14,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional, Union
 
-from geoint._types import GeoResult, CandidateLocation, Clue, LatLon
-from geoint._utils import combine_confidences
+from pygeospy._types import GeoResult, CandidateLocation, Clue, LatLon
+from pygeospy._utils import combine_confidences
 
-logger = logging.getLogger("geoint.pipeline")
+logger = logging.getLogger("pygeospy.pipeline")
 
 # ── Input type detection ──────────────────────────────────────────────────────
 
@@ -51,7 +51,7 @@ def _detect_input_type(inp: str) -> str:
 
 def _run_exif(image_path: str, result: GeoResult) -> list[Clue]:
     try:
-        from geoint.exif import extract, extract_clues
+        from pygeospy.exif import extract, extract_clues
         exif   = extract(image_path)
         clues  = extract_clues(exif)
         if exif.has_gps and exif.coordinates:
@@ -74,7 +74,7 @@ def _run_solar(image_path: str, result: GeoResult, shadow_ratio: Optional[float]
     if shadow_ratio is None or shadow_azimuth is None:
         return []
     try:
-        from geoint.solar import analyze_shadow
+        from pygeospy.solar import analyze_shadow
         solar = analyze_shadow(shadow_ratio, shadow_azimuth)
         result.add_reasoning(
             f"Solar analysis: elevation={solar.sun_elevation:.1f}°, "
@@ -90,7 +90,7 @@ def _run_solar(image_path: str, result: GeoResult, shadow_ratio: Optional[float]
 
 def _run_visual(image_path: str, result: GeoResult, vision_backend: str) -> list[Clue]:
     try:
-        from geoint import visual
+        from pygeospy import visual
         visual.set_backend(vision_backend)
         analysis = visual.analyze(image_path)
         clues    = analysis.get("clues", [])
@@ -111,7 +111,7 @@ def _run_visual(image_path: str, result: GeoResult, vision_backend: str) -> list
 
 def _run_language(image_path: str, result: GeoResult) -> list[Clue]:
     try:
-        from geoint.language import analyze
+        from pygeospy.language import analyze
         lang_result = analyze(image_path)
         clues = lang_result.get("clues", [])
         for place in lang_result.get("geocoded_places", []):
@@ -130,7 +130,7 @@ def _run_language(image_path: str, result: GeoResult) -> list[Clue]:
 
 def _run_chronos(image_path: str, result: GeoResult) -> list[Clue]:
     try:
-        from geoint.chronos import analyze
+        from pygeospy.chronos import analyze
         chrono = analyze(image_path=image_path)
         return chrono.get("clues", [])
     except Exception as e:
@@ -140,7 +140,7 @@ def _run_chronos(image_path: str, result: GeoResult) -> list[Clue]:
 
 def _run_audio(audio_path: str, result: GeoResult) -> list[Clue]:
     try:
-        from geoint.acoustic import analyze
+        from pygeospy.acoustic import analyze
         acoustic = analyze(audio_path)
         clues    = acoustic.get("clues", [])
         if clues:
@@ -153,7 +153,7 @@ def _run_audio(audio_path: str, result: GeoResult) -> list[Clue]:
 
 def _run_ip(ip: str, result: GeoResult) -> list[Clue]:
     try:
-        from geoint.geo import ip_to_location, ip_to_latlon
+        from pygeospy.geo import ip_to_location, ip_to_latlon
         info = ip_to_location(ip)
         loc  = ip_to_latlon(ip)
         if loc:
@@ -265,7 +265,7 @@ def analyze(
     elif result.input_type == "coords":
         try:
             lat, lon = map(float, input_path.split(","))
-            from geoint.geo import reverse_geocode
+            from pygeospy.geo import reverse_geocode
             info = reverse_geocode(lat, lon)
             result.candidate_coordinates.append(CandidateLocation(
                 location=LatLon(lat, lon), confidence=1.0,
@@ -317,7 +317,7 @@ def analyze(
     # ── Text pipeline ─────────────────────────────────────────────────────────
     elif result.input_type == "text":
         text = Path(input_path).read_text() if os.path.exists(input_path) else input_path
-        from geoint.language import analyze_text
+        from pygeospy.language import analyze_text
         signals = analyze_text(text)
         all_clues.extend(signals.get("clues", []))
         result.add_reasoning("Analyzed as plain text — language and regional signals extracted.")
@@ -337,7 +337,7 @@ def analyze(
     # Auto-export
     if export:
         out_dir = output_dir or "geoint_output"
-        from geoint.export import export_all
+        from pygeospy.export import export_all
         paths = export_all(result, output_dir=out_dir)
         logger.info(f"Exported to {out_dir}: {list(paths.keys())}")
 

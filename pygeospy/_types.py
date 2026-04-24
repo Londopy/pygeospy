@@ -1,5 +1,5 @@
 """
-geoint._types — Shared data-types and result containers.
+pygeospy._types — Shared data-types and result containers.
 All modules return instances of these classes so the pipeline can reason
 about confidence and evidence uniformly.
 """

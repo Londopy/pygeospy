@@ -1,5 +1,5 @@
 """
-geoint.geo — Geocoding, reverse geocoding, and IP geolocation.
+pygeospy.geo — Geocoding, reverse geocoding, and IP geolocation.
 """
 from __future__ import annotations
 
@@ -7,11 +7,11 @@ import logging
 import time
 from typing import Optional
 
-from geoint._utils import RateLimiter, retry
-from geoint._cache import cached
-from geoint._types import LatLon
+from pygeospy._utils import RateLimiter, retry
+from pygeospy._cache import cached
+from pygeospy._types import LatLon
 
-logger = logging.getLogger("geoint.geo")
+logger = logging.getLogger("pygeospy.geo")
 _nominatim_limiter = RateLimiter(calls_per_second=0.9)  # Nominatim: max 1 req/s
 
 
@@ -74,7 +74,7 @@ def country_from_coords(lat: float, lon: float) -> tuple[str, str]:
     Fast offline lookup via pycountry + shapely; falls back to Nominatim.
     """
     try:
-        from geoint._utils import RUST_AVAILABLE
+        from pygeospy._utils import RUST_AVAILABLE
         # Try fast offline library first
         import reverse_geocoder as rg  # type: ignore
         results = rg.search((lat, lon))
@@ -256,5 +256,5 @@ def search_places(
 
 def timezone_from_coords(lat: float, lon: float) -> str:
     """Return IANA timezone name for coordinates."""
-    from geoint.coords import get_timezone
+    from pygeospy.coords import get_timezone
     return get_timezone(lat, lon)

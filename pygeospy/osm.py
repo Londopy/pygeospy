@@ -1,5 +1,5 @@
 """
-geoint.osm — OpenStreetMap / Overpass API queries.
+pygeospy.osm — OpenStreetMap / Overpass API queries.
 Pure Python: HTTP stays in Python, geometry in shapely.
 """
 from __future__ import annotations
@@ -8,11 +8,11 @@ import json
 import logging
 from typing import Optional
 
-from geoint._utils import RateLimiter, retry
-from geoint._cache import cached
-from geoint._types import LatLon, BoundingBox
+from pygeospy._utils import RateLimiter, retry
+from pygeospy._cache import cached
+from pygeospy._types import LatLon, BoundingBox
 
-logger = logging.getLogger("geoint.osm")
+logger = logging.getLogger("pygeospy.osm")
 _limiter = RateLimiter(calls_per_second=0.5)  # Overpass fair use
 
 
