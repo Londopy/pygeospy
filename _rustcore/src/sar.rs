@@ -9,7 +9,7 @@ use crate::coords::{
     destination_point_impl, bearing_impl,
 };
 
-const DEG2RAD: f64 = PI / 180.0;
+const _DEG2RAD: f64 = PI / 180.0;
 
 // ── Grid generation ───────────────────────────────────────────────────────────
 
@@ -264,3 +264,4 @@ pub fn register(parent: &Bound<'_, PyModule>) -> PyResult<()> {
     parent.add_submodule(&m)?;
     Ok(())
 }
+                         
