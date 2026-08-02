@@ -8,9 +8,9 @@ import json
 import logging
 from typing import Optional
 
-from pygeospy._utils import RateLimiter, retry
 from pygeospy._cache import cached
 from pygeospy._types import BoundingBox
+from pygeospy._utils import RateLimiter, retry
 
 logger = logging.getLogger("pygeospy.osm")
 _limiter = RateLimiter(calls_per_second=0.5)  # Overpass fair use

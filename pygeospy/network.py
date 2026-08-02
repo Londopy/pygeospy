@@ -7,8 +7,8 @@ import logging
 import re
 from typing import Optional
 
-from pygeospy._types import Clue, LatLon
 from pygeospy._cache import cached
+from pygeospy._types import Clue, LatLon
 from pygeospy._utils import retry
 
 logger = logging.getLogger("pygeospy.network")
@@ -78,8 +78,9 @@ def bssid_to_location(bssid: str, api_key: Optional[str] = None) -> Optional[Lat
     Geolocate a Wi-Fi access point by BSSID/MAC using WiGLE API.
     Requires a WiGLE API key (set WIGLE_API_KEY env var or pass api_key).
     """
-    import httpx
     import os
+
+    import httpx
     key = api_key or os.environ.get("WIGLE_API_KEY", "")
     if not key:
         logger.warning("WIGLE_API_KEY not set; BSSID lookup unavailable")

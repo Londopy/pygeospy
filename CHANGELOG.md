@@ -45,7 +45,13 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 - MIT `LICENSE` file (was referenced but missing).
 - CI workflow: pytest matrix on Ubuntu/macOS/Windows x Python 3.10-3.12,
-  plus a Rust-core build job and ruff lint.
+  plus a Rust-core wheel-build job (asserts the compiled extension actually
+  loads on each OS) and ruff lint.
+- `.gitattributes` normalising line endings across platforms.
+
+### Internal
+- Cleaned ~35 unused imports, 4 dead local variables, and a stray `import pyotp`
+  in the Plus Code fallback path; `ruff check` is now clean.
 
 ## [0.2.0] — 2026-04-23
 

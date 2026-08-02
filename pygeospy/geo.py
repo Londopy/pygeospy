@@ -7,9 +7,9 @@ import logging
 import os
 from typing import Optional
 
-from pygeospy._utils import RateLimiter, retry
 from pygeospy._cache import cached
 from pygeospy._types import LatLon
+from pygeospy._utils import RateLimiter, retry
 
 logger = logging.getLogger("pygeospy.geo")
 _nominatim_limiter = RateLimiter(calls_per_second=0.9)  # Nominatim: max 1 req/s

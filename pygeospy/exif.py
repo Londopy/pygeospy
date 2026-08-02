@@ -8,7 +8,7 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from pygeospy._types import LatLon, ExifResult, Clue
+from pygeospy._types import Clue, ExifResult, LatLon
 from pygeospy._utils import format_latlon
 
 logger = logging.getLogger("pygeospy.exif")
@@ -156,7 +156,7 @@ def _extract_with_pillow(image_path: Path, result: ExifResult) -> None:
     """Fallback EXIF extraction using Pillow."""
     try:
         from PIL import Image
-        from PIL.ExifTags import TAGS, GPSTAGS
+        from PIL.ExifTags import TAGS
 
         img  = Image.open(image_path)
         raw  = img._getexif()
@@ -169,7 +169,6 @@ def _extract_with_pillow(image_path: Path, result: ExifResult) -> None:
 
         gps_raw = decoded.get("GPSInfo")
         if gps_raw:
-            gps = {GPSTAGS.get(t, str(t)): v for t, v in gps_raw.items()}
             coords = _parse_pillow_gps(gps_raw)
             if coords:
                 result.coordinates = coords

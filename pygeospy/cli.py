@@ -145,8 +145,8 @@ def coords_bearing(
     lat2: float = typer.Argument(...), lon2: float = typer.Argument(...),
 ):
     """Initial bearing from point 1 → point 2."""
-    from pygeospy.coords import bearing
     from pygeospy._utils import bearing_to_cardinal
+    from pygeospy.coords import bearing
     b = bearing(lat1, lon1, lat2, lon2)
     console.print(f"Bearing: [bold]{b:.2f}°[/bold] ({bearing_to_cardinal(b)})")
 
@@ -188,8 +188,8 @@ def solar_position(
     hour: float = typer.Argument(..., help="UTC hour (0-24)"),
 ):
     """Calculate sun position at a location and time."""
-    from pygeospy.solar import solar_elevation, solar_azimuth, shadow_azimuth, shadow_length_ratio
     from pygeospy._utils import bearing_to_cardinal
+    from pygeospy.solar import shadow_azimuth, shadow_length_ratio, solar_azimuth, solar_elevation
     el  = solar_elevation(lat, lon, doy, hour)
     az  = solar_azimuth(lat, lon, doy, hour)
     sh_az = shadow_azimuth(az)
@@ -230,8 +230,9 @@ def exif_extract(
     json_out: bool = typer.Option(False, "--json", help="Output raw JSON"),
 ):
     """Extract EXIF metadata from an image."""
-    from pygeospy.exif import extract, forensic_flags
     import json
+
+    from pygeospy.exif import extract, forensic_flags
     r = extract(image)
     if json_out:
         console.print(json.dumps(r.raw_exif, indent=2, default=str))
@@ -283,7 +284,7 @@ def sar_grid(
     gpx:    str   = typer.Option("", "--gpx", help="Also export GPX"),
 ):
     """Generate a NASAR search grid."""
-    from pygeospy.sar import search_grid, to_geojson, grid_to_gpx
+    from pygeospy.sar import grid_to_gpx, search_grid, to_geojson
     features = search_grid(lat, lon, radius, cell)
     to_geojson(features, out)
     console.print(f"[green]Grid saved:[/green] {out} ({len(features)} cells)")

@@ -10,9 +10,9 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from pygeospy._utils import rustcore, retry
 from pygeospy._cache import cached
-from pygeospy._types import TerrainResult, BoundingBox
+from pygeospy._types import BoundingBox, TerrainResult
+from pygeospy._utils import retry, rustcore
 
 logger = logging.getLogger("pygeospy.terrain")
 _T = rustcore("terrain")

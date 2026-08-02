@@ -153,7 +153,8 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
-ignore = ["E501"]
+# E501 long lines, E701/E702 compact one-liners: deliberate style in this codebase
+ignore = ["E501", "E701", "E702"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["pygeospy"]

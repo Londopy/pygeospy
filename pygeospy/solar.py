@@ -10,8 +10,8 @@ import json
 import math
 from typing import Optional
 
-from pygeospy._utils import rustcore, bearing_to_cardinal
-from pygeospy._types import SolarResult, Clue
+from pygeospy._types import Clue, SolarResult
+from pygeospy._utils import bearing_to_cardinal, rustcore
 
 _S = rustcore("solar")
 

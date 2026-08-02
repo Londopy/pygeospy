@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import math
 
-from pygeospy._utils import rustcore, validate_latlon, format_latlon, retry
 from pygeospy._cache import cached
-from pygeospy._types import LatLon, BoundingBox
+from pygeospy._types import BoundingBox, LatLon
+from pygeospy._utils import format_latlon, retry, rustcore, validate_latlon
 
 # Rust sub-module (may be None if not compiled)
 _C = rustcore("coords")

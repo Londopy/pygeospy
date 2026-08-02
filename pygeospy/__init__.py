@@ -40,8 +40,10 @@ __license__ = "MIT"
 # Imported on first access so optional heavy deps (rasterio, easyocr, …)
 # don't block users who only need a subset of the library.
 
-from pygeospy import coords   # noqa: F401 — always available, Rust-backed
-from pygeospy import solar    # noqa: F401 — always available, Rust-backed
+from pygeospy import (
+    coords,  # noqa: F401 — always available, Rust-backed
+    solar,  # noqa: F401 — always available, Rust-backed
+)
 
 # The rest are imported lazily via __getattr__ to avoid hard import failures
 # when optional dependencies (rasterio, overpy, …) are not installed.
@@ -52,8 +54,8 @@ _LAZY_MODULES = [
     "pipeline",
 ]
 
-import importlib as _importlib
-import sys as _sys
+import importlib as _importlib  # noqa: E402
+import sys as _sys  # noqa: E402
 
 
 def __getattr__(name: str):
@@ -71,7 +73,7 @@ def __dir__():
 
 # ── Rust availability flag ────────────────────────────────────────────────────
 
-from pygeospy._utils import RUST_AVAILABLE  # noqa: F401
+from pygeospy._utils import RUST_AVAILABLE  # noqa: F401,E402
 
 if not RUST_AVAILABLE:
     import warnings

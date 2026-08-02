@@ -1,7 +1,7 @@
 """Tests for pygeospy.terrain — slope, TRI, viewshed (pure-Python fallback)."""
 import math
-import pytest
 
+import pytest
 
 # ── Test DEM fixtures ─────────────────────────────────────────────────────────
 

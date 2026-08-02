@@ -14,7 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Optional
 
-from pygeospy._types import GeoResult, CandidateLocation, Clue, LatLon
+from pygeospy._types import CandidateLocation, Clue, GeoResult, LatLon
 
 logger = logging.getLogger("pygeospy.pipeline")
 
@@ -152,7 +152,7 @@ def _run_audio(audio_path: str, result: GeoResult) -> list[Clue]:
 
 def _run_ip(ip: str, result: GeoResult) -> list[Clue]:
     try:
-        from pygeospy.geo import ip_to_location, ip_to_latlon
+        from pygeospy.geo import ip_to_latlon, ip_to_location
         info = ip_to_location(ip)
         loc  = ip_to_latlon(ip)
         if loc:

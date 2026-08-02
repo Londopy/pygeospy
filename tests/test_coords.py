@@ -1,7 +1,6 @@
 """Tests for pygeospy.coords — pure math, no network I/O."""
 import pytest
 
-
 # ── Haversine ─────────────────────────────────────────────────────────────────
 
 def test_haversine_known_distance():
@@ -85,7 +84,7 @@ def test_midpoint_equator():
 
 def test_midpoint_distance():
     """Midpoint should be equidistant from both endpoints."""
-    from pygeospy.coords import midpoint, haversine
+    from pygeospy.coords import haversine, midpoint
     p1, p2 = (48.85, 2.35), (51.51, -0.13)
     mid = midpoint(*p1, *p2)
     d1  = haversine(*p1, mid.lat, mid.lon)

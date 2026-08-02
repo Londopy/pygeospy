@@ -15,8 +15,8 @@ jobs:
         python-version: ["3.10", "3.11", "3.12"]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install test deps
@@ -33,24 +33,43 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - uses: dtolnay/rust-toolchain@stable
-      - name: Build and install with Rust core
+      - name: Build wheel
+        # `maturin develop` requires an activated virtualenv, which setup-python
+        # does not provide. Build a real wheel and install it instead.
         run: |
           pip install maturin pytest
-          maturin develop --release
+          maturin build --release -o dist
+      - name: Install wheel
+        run: pip install dist/*.whl
+      - name: Verify Rust core actually loaded
+        # Run outside the repo: the _rustcore/ source dir would otherwise shadow
+        # the compiled extension as an empty namespace package.
+        run: |
+          cd "${RUNNER_TEMP}"
+          python -c "
+          from pygeospy._utils import RUST_AVAILABLE
+          print('RUST_AVAILABLE =', RUST_AVAILABLE)
+          assert RUST_AVAILABLE, 'Rust core failed to load from the installed wheel'
+          "
       - name: Run tests (Rust-accelerated)
-        run: python -m pytest tests/ -v
+        run: |
+          cd "${RUNNER_TEMP}"
+          python -m pytest "${GITHUB_WORKSPACE}/tests" -v
 
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: pip install ruff

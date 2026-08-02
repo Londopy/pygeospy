@@ -39,8 +39,9 @@ def time_from_shadow(
     tolerance_hours : float
         Search resolution
     """
-    target_el  = elevation_from_shadow(shadow_ratio)
-    target_az  = (shadow_azimuth_deg + 180) % 360  # sun azimuth
+    target_el = elevation_from_shadow(shadow_ratio)
+    # NOTE: sun azimuth ((shadow_azimuth_deg + 180) % 360) is not yet used to
+    # narrow candidates; matching is elevation-only. See issue: azimuth filter.
 
     candidates = []
     hour = 5.0
@@ -66,9 +67,9 @@ def season_from_signals(
     Estimate season from visual environmental signals.
     Returns {"season": str, "hemisphere_hint": str, "doy_range": (int, int)}.
     """
-    # Northern hemisphere seasons: winter=DEC-FEB, spring=MAR-MAY, summer=JUN-AUG, autumn=SEP-NOV
-    nh_seasons = {"winter": (335, 60), "spring": (60, 152), "summer": (152, 244), "autumn": (244, 335)}
-
+    # Northern hemisphere seasons:
+    #   winter=DEC-FEB (335-60), spring=MAR-MAY (60-152),
+    #   summer=JUN-AUG (152-244), autumn=SEP-NOV (244-335)
     season = "unknown"
     doy_range = (1, 365)
 
@@ -138,6 +139,7 @@ def weather_on_date(lat: float, lon: float, date_str: str) -> dict:
     """
     try:
         from datetime import date as _date
+
         import httpx
 
         dt = _date.fromisoformat(date_str)

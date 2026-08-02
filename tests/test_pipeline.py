@@ -1,7 +1,6 @@
 """Tests for pygeospy.pipeline — end-to-end integration."""
 import pytest
 
-
 # ── Input type detection ──────────────────────────────────────────────────────
 
 def test_detect_ip():
@@ -41,7 +40,7 @@ def test_geo_result_defaults():
 
 
 def test_geo_result_best_location():
-    from pygeospy._types import GeoResult, CandidateLocation, LatLon
+    from pygeospy._types import CandidateLocation, GeoResult, LatLon
     r = GeoResult()
     r.candidate_coordinates = [
         CandidateLocation(LatLon(0, 0), 0.5, ["test"]),
@@ -89,8 +88,9 @@ def test_pipeline_text_tld():
 
 def test_pipeline_coords_with_mock():
     """Pipeline coordinate input should create a candidate location."""
-    from pygeospy.pipeline import analyze
     from unittest.mock import patch
+
+    from pygeospy.pipeline import analyze
 
     mock_geo = {"display_name": "Paris, France", "country": "France",
                 "country_code": "FR", "city": "Paris", "state": "", "postcode": "",
@@ -121,8 +121,8 @@ def test_clue_to_dict():
 # ── Country aggregation ───────────────────────────────────────────────────────
 
 def test_country_normalisation():
-    from pygeospy.pipeline import _aggregate_country_probabilities
     from pygeospy._types import GeoResult
+    from pygeospy.pipeline import _aggregate_country_probabilities
     r = GeoResult()
     r.candidate_countries = [("France", 0.3), ("France", 0.4), ("Germany", 0.5)]
     _aggregate_country_probabilities(r)
@@ -138,16 +138,16 @@ def test_country_normalisation():
 # ── Generate summary ──────────────────────────────────────────────────────────
 
 def test_generate_summary_no_result():
-    from pygeospy.pipeline import _generate_summary
     from pygeospy._types import GeoResult
+    from pygeospy.pipeline import _generate_summary
     r = GeoResult()
     summary = _generate_summary(r)
     assert "Insufficient evidence" in summary
 
 
 def test_generate_summary_with_result():
+    from pygeospy._types import CandidateLocation, GeoResult, LatLon
     from pygeospy.pipeline import _generate_summary
-    from pygeospy._types import GeoResult, CandidateLocation, LatLon
     r = GeoResult(input_type="image")
     r.candidate_coordinates = [CandidateLocation(LatLon(48.85, 2.35), 0.9, ["exif"])]
     r.candidate_countries   = [("France", 1.0)]

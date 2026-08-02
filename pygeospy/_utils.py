@@ -3,9 +3,9 @@ pygeospy._utils — Shared utilities used across all modules.
 """
 from __future__ import annotations
 
-import time
 import functools
 import logging
+import time
 from typing import Callable
 
 logger = logging.getLogger("pygeospy")

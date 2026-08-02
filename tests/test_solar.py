@@ -1,5 +1,6 @@
 """Tests for pygeospy.solar — shadow geometry and latitude inference."""
 import math
+
 import pytest
 
 
@@ -61,7 +62,7 @@ def test_shadow_length_ratio_45():
 
 def test_elevation_from_shadow_roundtrip():
     """elevation → ratio → elevation should round-trip."""
-    from pygeospy.solar import shadow_length_ratio, elevation_from_shadow
+    from pygeospy.solar import elevation_from_shadow, shadow_length_ratio
     for el in [20, 35, 55, 70]:
         ratio = shadow_length_ratio(el)
         back  = elevation_from_shadow(ratio)

@@ -248,7 +248,6 @@ def grid_to_gpx(
         if coords:
             lat = sum(c[1] for c in coords) / len(coords)
             lon = sum(c[0] for c in coords) / len(coords)
-            label = feat["properties"].get("sector", "")
             wps.append((lat, lon))
     return to_gpx(wps, name="SAR Search Grid", output_path=output_path)
 
