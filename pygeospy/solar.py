@@ -11,7 +11,7 @@ import math
 from typing import Optional
 
 from pygeospy._utils import rustcore, bearing_to_cardinal
-from pygeospy._types import SolarResult, Clue, BoundingBox, LatLon
+from pygeospy._types import SolarResult, Clue
 
 _S = rustcore("solar")
 
@@ -259,7 +259,7 @@ def analyze_shadow(
     doy, hour_utc = 172, 12.0
 
     if timestamp_utc:
-        from datetime import datetime, timezone
+        from datetime import datetime
         try:
             dt = datetime.fromisoformat(timestamp_utc.replace("Z", "+00:00"))
             doy = dt.timetuple().tm_yday
@@ -325,6 +325,6 @@ def lat_band_to_geojson(
 def save_lat_bands(result: SolarResult, path: str) -> None:
     """Save candidate lat bands to a GeoJSON file."""
     gj = lat_band_to_geojson(result.candidate_lat_bands)
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(gj, f, indent=2)
     print(f"Saved {len(result.candidate_lat_bands)} lat bands → {path}")

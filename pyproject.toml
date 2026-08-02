@@ -6,11 +6,11 @@ build-backend = "maturin"
 
 [project]
 name            = "pygeospy"
-version         = "0.2.0"
+version         = "0.2.1"
 description     = "Python GEOINT/OSINT library with Rust-accelerated core"
 readme          = "README.md"
 license         = { text = "MIT" }
-authors         = [{ name = "geoint contributors" }]
+authors         = [{ name = "pygeospy contributors" }]
 requires-python = ">=3.10"
 
 keywords = [
@@ -150,10 +150,12 @@ filterwarnings = [
 
 [tool.ruff]
 line-length = 100
-select      = ["E", "F", "W", "I"]
-ignore      = ["E501"]
 
-[tool.ruff.isort]
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
 known-first-party = ["pygeospy"]
 
 # ── mypy ──────────────────────────────────────────────────────────────────────

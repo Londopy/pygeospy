@@ -3,11 +3,10 @@ pygeospy._utils — Shared utilities used across all modules.
 """
 from __future__ import annotations
 
-import math
 import time
 import functools
 import logging
-from typing import Any, Callable, Optional
+from typing import Callable
 
 logger = logging.getLogger("pygeospy")
 
@@ -21,13 +20,22 @@ def _import_rustcore():
     """
     try:
         import _rustcore
-        return _rustcore
     except ImportError:
         logger.warning(
             "_rustcore not found — running in pure-Python fallback mode. "
             "Run `maturin develop` or `pip install -e .` to build Rust extensions."
         )
         return None
+    # Guard against the _rustcore/ *source* directory being picked up as an
+    # empty namespace package when running from the repo root. A real build
+    # is a compiled extension and exposes the submodules.
+    if getattr(_rustcore, "coords", None) is None:
+        logger.warning(
+            "_rustcore import resolved to the source directory, not a compiled "
+            "extension — running in pure-Python fallback mode."
+        )
+        return None
+    return _rustcore
 
 
 _RC = _import_rustcore()

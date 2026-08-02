@@ -5,10 +5,8 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Optional
 
 from pygeospy._types import Clue
-from pygeospy._cache import cached
 
 logger = logging.getLogger("pygeospy.language")
 

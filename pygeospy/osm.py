@@ -10,7 +10,7 @@ from typing import Optional
 
 from pygeospy._utils import RateLimiter, retry
 from pygeospy._cache import cached
-from pygeospy._types import LatLon, BoundingBox
+from pygeospy._types import BoundingBox
 
 logger = logging.getLogger("pygeospy.osm")
 _limiter = RateLimiter(calls_per_second=0.5)  # Overpass fair use
@@ -237,7 +237,7 @@ def region_boundary(name: str, admin_level: Optional[int] = None) -> Optional[di
     # Step 1: Nominatim lookup for OSM relation ID
     nm_url = "https://nominatim.openstreetmap.org/search"
     params = {"q": name, "format": "json", "limit": 1}
-    headers = {"User-Agent": "geoint-library/0.2"}
+    headers = {"User-Agent": "pygeospy-library/0.2"}
     resp = httpx.get(nm_url, params=params, headers=headers, timeout=10)
     resp.raise_for_status()
     results = resp.json()
@@ -275,7 +275,7 @@ def to_geojson(elements: list[dict]) -> dict:
 
 def save_geojson(elements: list[dict], path: str) -> str:
     gj = to_geojson(elements)
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(gj, f, indent=2)
     logger.info(f"GeoJSON saved → {path}")
     return path
@@ -301,7 +301,7 @@ def save_kml(elements: list[dict], path: str) -> str:
                 "</Placemark>",
             ]
     lines += ["</Document>", "</kml>"]
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     logger.info(f"KML saved → {path}")
     return path

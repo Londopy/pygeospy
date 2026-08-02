@@ -5,7 +5,6 @@ Raster math delegated to _rustcore.raster for large arrays.
 from __future__ import annotations
 
 import logging
-import os
 from pathlib import Path
 from typing import Optional
 
@@ -94,7 +93,6 @@ def load_band_as_array(tiff_path: str, band: int = 1) -> list[float]:
     """
     try:
         import rasterio
-        import numpy as np
         with rasterio.open(tiff_path) as src:
             data = src.read(band).astype(float).flatten()
             # Normalise DN to 0–1 (Sentinel-2 is 0–10000)

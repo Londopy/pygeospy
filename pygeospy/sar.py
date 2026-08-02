@@ -7,11 +7,9 @@ from __future__ import annotations
 
 import json
 import logging
-from pathlib import Path
 from typing import Optional
 
 from pygeospy._utils import rustcore
-from pygeospy._types import LatLon, BoundingBox
 
 logger = logging.getLogger("pygeospy.sar")
 _SAR = rustcore("sar")
@@ -219,7 +217,7 @@ def to_gpx(
             rp = gpxpy.gpx.GPXRoutePoint(lat, lon, name=f"WP{i+1:03d}")
             route.route_points.append(rp)
         gpx.routes.append(route)
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(gpx.to_xml())
     except ImportError:
         # Minimal hand-written GPX fallback
@@ -231,7 +229,7 @@ def to_gpx(
         for i, (lat, lon) in enumerate(waypoints):
             lines.append(f'  <rtept lat="{lat}" lon="{lon}"><name>WP{i+1:03d}</name></rtept>')
         lines += ["</rte>", "</gpx>"]
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write("\n".join(lines))
 
     logger.info(f"GPX saved → {output_path}")
@@ -258,7 +256,7 @@ def grid_to_gpx(
 def to_geojson(features: list[dict], output_path: str) -> str:
     """Save SAR features as a GeoJSON FeatureCollection."""
     fc = {"type": "FeatureCollection", "features": features}
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         json.dump(fc, f, indent=2)
     logger.info(f"GeoJSON saved → {output_path}")
     return output_path

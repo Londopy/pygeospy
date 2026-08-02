@@ -8,14 +8,39 @@ import hashlib
 import json
 import logging
 import os
+import sys
 import time
 from pathlib import Path
 from typing import Any, Optional
 
 logger = logging.getLogger("pygeospy.cache")
 
-# Default location: ~/.cache/pygeospy/
-_DEFAULT_CACHE_DIR = Path.home() / ".cache" / "pygeospy"
+def _default_cache_dir() -> Path:
+    """
+    Platform-appropriate cache directory:
+
+    - ``PYGEOSPY_CACHE_DIR`` env var, if set (all platforms)
+    - Windows: ``%LOCALAPPDATA%\\pygeospy\\cache``
+    - macOS:   ``~/Library/Caches/pygeospy``
+    - Linux:   ``$XDG_CACHE_HOME/pygeospy`` or ``~/.cache/pygeospy``
+    """
+    env = os.environ.get("PYGEOSPY_CACHE_DIR")
+    if env:
+        return Path(env)
+    if sys.platform == "win32":
+        base = os.environ.get("LOCALAPPDATA")
+        if base:
+            return Path(base) / "pygeospy" / "cache"
+        return Path.home() / "AppData" / "Local" / "pygeospy" / "cache"
+    if sys.platform == "darwin":
+        return Path.home() / "Library" / "Caches" / "pygeospy"
+    xdg = os.environ.get("XDG_CACHE_HOME")
+    if xdg:
+        return Path(xdg) / "pygeospy"
+    return Path.home() / ".cache" / "pygeospy"
+
+
+_DEFAULT_CACHE_DIR = _default_cache_dir()
 
 
 class DiskCache:
@@ -52,7 +77,7 @@ class DiskCache:
         if not path.exists():
             return None
         try:
-            with path.open() as f:
+            with path.open(encoding="utf-8") as f:
                 entry = json.load(f)
             expires = entry.get("expires", 0)
             if expires and time.time() > expires:
@@ -74,7 +99,7 @@ class DiskCache:
         }
         path = self._path(key)
         try:
-            with path.open("w") as f:
+            with path.open("w", encoding="utf-8") as f:
                 json.dump(entry, f)
         except OSError as e:
             logger.warning(f"Cache write failed for {path}: {e}")

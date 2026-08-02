@@ -56,8 +56,8 @@ Thumbs.db
 site/
 docs/_build/
 
-# geoint runtime artefacts
-geoint_output/
+# pygeospy runtime artefacts
+pygeospy_output/
 *.gpx
 *.kml
 *.kmz
@@ -80,4 +80,4 @@ api_keys.txt
 
 # Cache
 .cache/
-~/.cache/geoint/
+~/.cache/pygeospy/

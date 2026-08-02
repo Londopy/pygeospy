@@ -1,4 +1,4 @@
-"""Tests for geoint.terrain — slope, TRI, viewshed (pure-Python fallback)."""
+"""Tests for pygeospy.terrain — slope, TRI, viewshed (pure-Python fallback)."""
 import math
 import pytest
 

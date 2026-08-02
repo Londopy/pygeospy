@@ -3,7 +3,7 @@ name = "_rustcore"
 version = "0.1.0"
 edition = "2021"
 description = "High-performance Rust core for the pygeospy GEOINT/OSINT library"
-authors = ["geoint contributors"]
+authors = ["pygeospy contributors"]
 license = "MIT"
 
 [lib]
@@ -11,7 +11,7 @@ name = "_rustcore"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.23", features = ["extension-module", "abi3-py39"] }
+pyo3 = { version = "0.23", features = ["extension-module", "abi3-py310"] }
 
 [profile.release]
 opt-level = 3

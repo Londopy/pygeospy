@@ -1,5 +1,4 @@
-"""Tests for geoint.coords — pure math, no network I/O."""
-import math
+"""Tests for pygeospy.coords — pure math, no network I/O."""
 import pytest
 
 
@@ -78,7 +77,7 @@ def test_destination_roundtrip():
 # ── Midpoint ──────────────────────────────────────────────────────────────────
 
 def test_midpoint_equator():
-    from pygeospy.coords import midpoint, haversine
+    from pygeospy.coords import midpoint
     mid = midpoint(0, -90, 0, 90)
     assert mid.lat == pytest.approx(0.0, abs=0.01)
     assert mid.lon == pytest.approx(0.0, abs=0.01)

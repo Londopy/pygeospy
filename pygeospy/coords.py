@@ -7,7 +7,6 @@ otherwise.  Heavy I/O (elevation API, timezone lookup) stays in Python.
 from __future__ import annotations
 
 import math
-from typing import Optional
 
 from pygeospy._utils import rustcore, validate_latlon, format_latlon, retry
 from pygeospy._cache import cached
@@ -156,7 +155,6 @@ def dd_to_dms(dd: float) -> tuple[int, int, float, str]:
         deg = int(a)
         mn  = int((a - deg) * 60)
         sec = (a - deg - mn/60) * 3600
-    direction = 1 if dd >= 0 else -1
     return deg, mn, sec, "+" if dd >= 0 else "-"
 
 
@@ -219,10 +217,6 @@ def latlon_to_plus_code(lat: float, lon: float, code_length: int = 10) -> str:
         import openlocationcode.openlocationcode as olc
         return olc.encode(lat, lon, code_length)
     except ImportError:
-        try:
-            import pyotp  # noqa – wrong package, will fail
-        except ImportError:
-            pass
         raise ImportError("openlocationcode package required: pip install openlocationcode")
 
 

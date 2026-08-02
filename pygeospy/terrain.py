@@ -7,11 +7,10 @@ Python layer manages DEM download, rasterio I/O, and export.
 from __future__ import annotations
 
 import logging
-import os
 from pathlib import Path
 from typing import Optional
 
-from pygeospy._utils import rustcore, validate_latlon, retry
+from pygeospy._utils import rustcore, retry
 from pygeospy._cache import cached
 from pygeospy._types import TerrainResult, BoundingBox
 
@@ -56,7 +55,7 @@ def download_dem(
     # Save as a simple CSV (rasterio-compatible GeoTIFF would need gdal)
     rows = data.get("results", [])
     csv_path = fname.with_suffix(".csv")
-    with open(csv_path, "w") as f:
+    with open(csv_path, "w", encoding="utf-8") as f:
         f.write("lat,lon,elevation\n")
         for r in rows:
             la  = r["location"]["lat"]
@@ -77,7 +76,7 @@ def load_dem_csv(csv_path: str | Path) -> tuple[list[list[float]], float]:
     from math import sqrt
 
     rows = []
-    with open(csv_path) as f:
+    with open(csv_path, encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             rows.append((float(row["lat"]), float(row["lon"]), float(row["elevation"])))
@@ -236,7 +235,7 @@ def export_geotiff(
 
 def export_csv(grid: list[list[float]], output_path: str) -> str:
     """Export a 2D grid as a flat row,col,value CSV."""
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         f.write("row,col,value\n")
         for r, row in enumerate(grid):
             for c, val in enumerate(row):

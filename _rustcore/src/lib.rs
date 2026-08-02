@@ -6,7 +6,7 @@ pub mod terrain;
 pub mod sar;
 pub mod raster;
 
-/// _rustcore — Rust-accelerated backend for the geoint library.
+/// _rustcore — Rust-accelerated backend for the pygeospy library.
 ///
 /// Exposes five sub-modules:
 ///   _rustcore.coords   – coordinate math and projections

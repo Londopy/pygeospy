@@ -1,0 +1,17 @@
+# Normalize line endings across Windows / macOS / Linux
+* text=auto
+
+*.py   text eol=lf
+*.rs   text eol=lf
+*.toml text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.md   text eol=lf
+Makefile text eol=lf
+
+# Binary
+*.png  binary
+*.jpg  binary
+*.so   binary
+*.pyd  binary
+*.dylib binary

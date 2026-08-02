@@ -1,4 +1,4 @@
-"""Tests for geoint.sar — grid generation and SAR utilities."""
+"""Tests for pygeospy.sar — grid generation and SAR utilities."""
 import pytest
 
 

@@ -4,7 +4,7 @@
 > Given any image, coordinates, IP, or set of clues — produce a location.
 
 [![PyPI](https://img.shields.io/pypi/v/pygeospy)](https://pypi.org/project/pygeospy/)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](https://python.org)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-core-orange)](https://rustlang.org)
 
@@ -231,7 +231,7 @@ print(result.candidate_countries[:3])
 
 ## Building the Rust Core
 
-The Rust core compiles to a single `.pyd`/`.so` file that works on Python 3.9+.
+The Rust core compiles to a single `.pyd`/`.so` file that works on Python 3.10+.
 If Rust is unavailable, **all modules fall back to pure-Python automatically** (with a `RuntimeWarning` at import).
 
 ```bash

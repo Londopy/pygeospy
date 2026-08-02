@@ -1,6 +1,6 @@
 """
 pygeospy.pipeline — Unified analysis engine.
-Single entry point: geoint.pipeline.analyze(input) → GeoResult
+Single entry point: pygeospy.pipeline.analyze(input) → GeoResult
 
 Chains all modules together, runs in parallel where possible,
 and returns a ranked GeoResult with confidence-weighted candidates.
@@ -10,12 +10,11 @@ from __future__ import annotations
 import logging
 import os
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional
 
 from pygeospy._types import GeoResult, CandidateLocation, Clue, LatLon
-from pygeospy._utils import combine_confidences
 
 logger = logging.getLogger("pygeospy.pipeline")
 
@@ -196,7 +195,7 @@ def _generate_summary(result: GeoResult) -> str:
     top_country = result.top_country
     n_clues = len(result.clues)
 
-    lines = [f"geoint analysis: {n_clues} clues from {result.input_type} input."]
+    lines = [f"pygeospy analysis: {n_clues} clues from {result.input_type} input."]
     if best:
         lines.append(f"Best candidate: {best.location.lat:.4f}, {best.location.lon:.4f} "
                      f"({best.confidence:.0%} confidence) via {', '.join(best.source_modules)}.")
@@ -316,7 +315,7 @@ def analyze(
 
     # ── Text pipeline ─────────────────────────────────────────────────────────
     elif result.input_type == "text":
-        text = Path(input_path).read_text() if os.path.exists(input_path) else input_path
+        text = Path(input_path).read_text(encoding="utf-8") if os.path.exists(input_path) else input_path
         from pygeospy.language import analyze_text
         signals = analyze_text(text)
         all_clues.extend(signals.get("clues", []))
@@ -336,7 +335,7 @@ def analyze(
 
     # Auto-export
     if export:
-        out_dir = output_dir or "geoint_output"
+        out_dir = output_dir or "pygeospy_output"
         from pygeospy.export import export_all
         paths = export_all(result, output_dir=out_dir)
         logger.info(f"Exported to {out_dir}: {list(paths.keys())}")

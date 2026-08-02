@@ -22,7 +22,6 @@ try:
     import typer
     from rich.console import Console
     from rich.table import Table
-    from rich import print as rprint
     _TYPER_OK = True
 except ImportError:
     _TYPER_OK = False
@@ -72,7 +71,7 @@ def analyze(
         raise typer.Exit(1)
 
     if not quiet:
-        console.print(f"[bold cyan]geoint analyze[/bold cyan] → [yellow]{target}[/yellow]")
+        console.print(f"[bold cyan]pygeospy analyze[/bold cyan] → [yellow]{target}[/yellow]")
 
     result = _analyze(
         target,
@@ -129,7 +128,7 @@ def analyze(
 
 # ── coords sub-commands ───────────────────────────────────────────────────────
 
-@coords_app.command("haversine")
+@coords_app.command("haversine", context_settings={"ignore_unknown_options": True})
 def coords_haversine(
     lat1: float = typer.Argument(...), lon1: float = typer.Argument(...),
     lat2: float = typer.Argument(...), lon2: float = typer.Argument(...),
@@ -140,7 +139,7 @@ def coords_haversine(
     console.print(f"Distance: [bold]{d:.3f} km[/bold] ({d*0.621371:.3f} miles)")
 
 
-@coords_app.command("bearing")
+@coords_app.command("bearing", context_settings={"ignore_unknown_options": True})
 def coords_bearing(
     lat1: float = typer.Argument(...), lon1: float = typer.Argument(...),
     lat2: float = typer.Argument(...), lon2: float = typer.Argument(...),
@@ -152,7 +151,7 @@ def coords_bearing(
     console.print(f"Bearing: [bold]{b:.2f}°[/bold] ({bearing_to_cardinal(b)})")
 
 
-@coords_app.command("convert")
+@coords_app.command("convert", context_settings={"ignore_unknown_options": True})
 def coords_convert(
     lat: float = typer.Argument(...), lon: float = typer.Argument(...),
     fmt: str   = typer.Option("all", "--fmt", help="dd / dms / utm / mgrs / plus"),
@@ -167,7 +166,7 @@ def coords_convert(
             console.print(f"[yellow]{f.upper()}:[/yellow] {e}")
 
 
-@coords_app.command("bbox")
+@coords_app.command("bbox", context_settings={"ignore_unknown_options": True})
 def coords_bbox(
     lat: float = typer.Argument(...), lon: float = typer.Argument(...),
     radius: float = typer.Argument(..., help="Radius in km"),
@@ -181,7 +180,7 @@ def coords_bbox(
 
 # ── solar sub-commands ────────────────────────────────────────────────────────
 
-@solar_app.command("position")
+@solar_app.command("position", context_settings={"ignore_unknown_options": True})
 def solar_position(
     lat:  float = typer.Argument(...),
     lon:  float = typer.Argument(...),
@@ -201,7 +200,7 @@ def solar_position(
     console.print(f"[cyan]Shadow ratio:[/cyan]   {ratio:.3f} × object height")
 
 
-@solar_app.command("from-shadow")
+@solar_app.command("from-shadow", context_settings={"ignore_unknown_options": True})
 def solar_from_shadow(
     ratio:   float = typer.Argument(..., help="Shadow length / object height"),
     azimuth: float = typer.Argument(..., help="Shadow azimuth (degrees, 0=N)"),
@@ -262,7 +261,7 @@ def exif_batch(
     with_gps = [r for r in results if r.get("has_gps")]
     console.print(f"Processed {len(results)} images, {len(with_gps)} have GPS.")
     import csv
-    with open(output, "w", newline="") as f:
+    with open(output, "w", newline="", encoding="utf-8") as f:
         if results:
             w = csv.DictWriter(f, fieldnames=results[0].keys())
             w.writeheader(); w.writerows(results)
@@ -314,7 +313,7 @@ def sar_urgency(
 @cache_app.command("stats")
 def cache_stats():
     """Show disk cache statistics."""
-    from pygeospy._cache import _caches, get_cache
+    from pygeospy._cache import get_cache
     namespaces = ["elevation", "geocode", "reverse_geo", "ip_geo", "osm_features",
                   "osm_bbox", "osm_boundary", "dem", "timezone", "sentinel_products"]
     t = Table(title="Cache Statistics")
@@ -344,10 +343,10 @@ def cache_clear(namespace: Optional[str] = typer.Argument(None, help="Namespace 
 
 @app.command("info")
 def info():
-    """Show geoint version and Rust core status."""
+    """Show pygeospy version and Rust core status."""
     import pygeospy
     from pygeospy._utils import RUST_AVAILABLE
-    console.print(f"[bold]geoint[/bold] v{geoint.__version__}")
+    console.print(f"[bold]pygeospy[/bold] v{pygeospy.__version__}")
     status = "[green]✓ available[/green]" if RUST_AVAILABLE else "[yellow]✗ not compiled[/yellow]"
     console.print(f"Rust core (_rustcore): {status}")
     if not RUST_AVAILABLE:

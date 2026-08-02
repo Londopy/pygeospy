@@ -9,9 +9,9 @@ import base64
 import json
 import logging
 from pathlib import Path
-from typing import Optional, Any
+from typing import Optional
 
-from pygeospy._types import Clue, GeoResult
+from pygeospy._types import Clue
 
 logger = logging.getLogger("pygeospy.visual")
 

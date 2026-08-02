@@ -1,4 +1,4 @@
-# geoint Makefile
+# pygeospy Makefile
 # ─────────────────────────────────────────────────────────────────────────────
 # Common tasks for development, building, and testing.
 # Requires: Rust toolchain, maturin, Python ≥ 3.10
@@ -26,10 +26,10 @@ dev-release:  ## Build Rust core in release mode and install in editable mode
 
 # ── Python install ────────────────────────────────────────────────────────────
 
-install:  ## Install geoint with core dependencies (no optional extras)
+install:  ## Install pygeospy with core dependencies (no optional extras)
 	$(PYTHON) -m pip install -e .
 
-install-all:  ## Install geoint with ALL optional dependencies
+install-all:  ## Install pygeospy with ALL optional dependencies
 	$(PYTHON) -m pip install -e ".[all]"
 
 install-dev:  ## Install dev dependencies (pytest, ruff, mypy, etc.)
@@ -59,18 +59,18 @@ test-pipeline:  ## Run only pipeline tests
 	$(PYTEST) tests/test_pipeline.py -v
 
 test-cov:  ## Run tests with coverage report
-	$(PYTEST) tests/ --cov=geoint --cov-report=html --cov-report=term-missing
+	$(PYTEST) tests/ --cov=pygeospy --cov-report=html --cov-report=term-missing
 
 # ── Lint / format ─────────────────────────────────────────────────────────────
 
 lint:  ## Run ruff linter
-	ruff check geoint/ tests/
+	ruff check pygeospy/ tests/
 
 fmt:   ## Auto-format with ruff
-	ruff format geoint/ tests/
+	ruff format pygeospy/ tests/
 
 typecheck:  ## Run mypy type checker
-	mypy geoint/
+	mypy pygeospy/
 
 # ── Rust checks ───────────────────────────────────────────────────────────────
 
@@ -105,13 +105,13 @@ sdist:  ## Build source distribution
 # ── Demo ──────────────────────────────────────────────────────────────────────
 
 demo-coords:  ## Quick demo: London → Paris distance
-	$(PYTHON) -c "import geoint; print(f'London→Paris: {geoint.coords.haversine(51.5,-0.1,48.85,2.35):.1f} km')"
+	$(PYTHON) -c "import pygeospy; print(f'London→Paris: {pygeospy.coords.haversine(51.5,-0.1,48.85,2.35):.1f} km')"
 
 demo-solar:   ## Quick demo: solar position at London
-	$(PYTHON) -c "import geoint; print(f'Solar elevation London noon Jun: {geoint.solar.solar_elevation(51.5,-0.1,172,12.0):.1f}°')"
+	$(PYTHON) -c "import pygeospy; print(f'Solar elevation London noon Jun: {pygeospy.solar.solar_elevation(51.5,-0.1,172,12.0):.1f}°')"
 
 demo-sar:     ## Quick demo: SAR urgency score
-	$(PYTHON) -c "import geoint; print(geoint.sar.urgency_score(75, medical_condition=True, last_seen_hours=6))"
+	$(PYTHON) -c "import pygeospy; print(pygeospy.sar.urgency_score(75, medical_condition=True, last_seen_hours=6))"
 
 # ── Clean ─────────────────────────────────────────────────────────────────────
 
@@ -122,6 +122,6 @@ clean:  ## Remove build artefacts
 	find . -name "_rustcore*.so" -delete
 	find . -name "_rustcore*.pyd" -delete
 
-clean-cache:  ## Clear geoint API cache (~/.cache/geoint/)
-	$(PYTHON) -c "from geoint.cli import app; import typer; app(standalone_mode=False)" cache clear || \
-	rm -rf ~/.cache/geoint/
+clean-cache:  ## Clear pygeospy API cache (~/.cache/pygeospy/)
+	$(PYTHON) -c "from pygeospy.cli import app; import typer; app(standalone_mode=False)" cache clear || \
+	rm -rf ~/.cache/pygeospy/

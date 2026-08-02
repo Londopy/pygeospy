@@ -1,4 +1,4 @@
-"""Tests for geoint.solar — shadow geometry and latitude inference."""
+"""Tests for pygeospy.solar — shadow geometry and latitude inference."""
 import math
 import pytest
 

@@ -4,7 +4,7 @@ pygeospy.geo — Geocoding, reverse geocoding, and IP geolocation.
 from __future__ import annotations
 
 import logging
-import time
+import os
 from typing import Optional
 
 from pygeospy._utils import RateLimiter, retry
@@ -28,7 +28,7 @@ def geocode(address: str) -> Optional[LatLon]:
     _nominatim_limiter.wait()
     url = "https://nominatim.openstreetmap.org/search"
     params = {"q": address, "format": "json", "limit": 1, "addressdetails": 1}
-    headers = {"User-Agent": "geoint-library/0.2"}
+    headers = {"User-Agent": "pygeospy-library/0.2"}
     resp = httpx.get(url, params=params, headers=headers, timeout=10)
     resp.raise_for_status()
     results = resp.json()
@@ -49,7 +49,7 @@ def reverse_geocode(lat: float, lon: float) -> dict:
     _nominatim_limiter.wait()
     url = "https://nominatim.openstreetmap.org/reverse"
     params = {"lat": lat, "lon": lon, "format": "json", "addressdetails": 1}
-    headers = {"User-Agent": "geoint-library/0.2"}
+    headers = {"User-Agent": "pygeospy-library/0.2"}
     resp = httpx.get(url, params=params, headers=headers, timeout=10)
     resp.raise_for_status()
     data = resp.json()
@@ -74,7 +74,6 @@ def country_from_coords(lat: float, lon: float) -> tuple[str, str]:
     Fast offline lookup via pycountry + shapely; falls back to Nominatim.
     """
     try:
-        from pygeospy._utils import RUST_AVAILABLE
         # Try fast offline library first
         import reverse_geocoder as rg  # type: ignore
         results = rg.search((lat, lon))
@@ -193,7 +192,6 @@ def w3w_to_latlon(words: str, api_key: Optional[str] = None) -> Optional[LatLon]
         logger.warning("W3W_API_KEY not set; what3words lookup may fail.")
 
     import httpx
-    import os
     url = f"https://api.what3words.com/v3/convert-to-coordinates?words={words}&key={api_key}"
     resp = httpx.get(url, timeout=10)
     resp.raise_for_status()
@@ -206,7 +204,6 @@ def w3w_to_latlon(words: str, api_key: Optional[str] = None) -> Optional[LatLon]
 
 def latlon_to_w3w(lat: float, lon: float, api_key: Optional[str] = None) -> Optional[str]:
     """Convert lat/lon to a What3Words address."""
-    import os
     api_key = api_key or os.environ.get("W3W_API_KEY", "")
     import httpx
     url = f"https://api.what3words.com/v3/convert-to-3wa?coordinates={lat},{lon}&key={api_key}"
@@ -236,7 +233,7 @@ def search_places(
     if lat and lon:
         params["viewbox"] = f"{lon-radius_km/111},{lat-radius_km/111},{lon+radius_km/111},{lat+radius_km/111}"
         params["bounded"] = 1
-    headers = {"User-Agent": "geoint-library/0.2"}
+    headers = {"User-Agent": "pygeospy-library/0.2"}
     resp = httpx.get(url, params=params, headers=headers, timeout=10)
     resp.raise_for_status()
 

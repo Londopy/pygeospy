@@ -126,7 +126,7 @@ class CandidateLocation:
 @dataclass
 class GeoResult:
     """
-    Unified result returned by geoint.pipeline.analyze().
+    Unified result returned by pygeospy.pipeline.analyze().
     Contains all evidence, ranked candidates, and export handles.
     """
     # Input

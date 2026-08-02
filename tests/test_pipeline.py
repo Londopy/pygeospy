@@ -1,6 +1,5 @@
 """Tests for pygeospy.pipeline — end-to-end integration."""
 import pytest
-from unittest.mock import patch, MagicMock
 
 
 # ── Input type detection ──────────────────────────────────────────────────────

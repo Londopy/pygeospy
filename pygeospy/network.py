@@ -80,7 +80,6 @@ def bssid_to_location(bssid: str, api_key: Optional[str] = None) -> Optional[Lat
     """
     import httpx
     import os
-    import base64
     key = api_key or os.environ.get("WIGLE_API_KEY", "")
     if not key:
         logger.warning("WIGLE_API_KEY not set; BSSID lookup unavailable")

@@ -5,12 +5,10 @@ Combines shadow analysis, vegetation state, weather archive, and metadata hints.
 from __future__ import annotations
 
 import logging
-import math
-from datetime import datetime, timezone
 from typing import Optional
 
 from pygeospy._types import Clue
-from pygeospy.solar import elevation_from_shadow, solar_elevation, sunrise_sunset
+from pygeospy.solar import elevation_from_shadow, solar_elevation
 
 logger = logging.getLogger("pygeospy.chronos")
 
