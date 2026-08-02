@@ -5,8 +5,41 @@ on:
     tags: ["v*"]
 
 jobs:
+  # Fail fast, before anything is built or published, if the tag and the
+  # changelog disagree. Publishing is irreversible on PyPI; this is not.
+  verify-changelog:
+    name: verify changelog matches tag
+    runs-on: ubuntu-latest
+    outputs:
+      notes: ${{ steps.extract.outputs.notes-file }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install patchnotes
+      - run: patchnotes CHANGELOG.md validate --strict
+      - name: Extract release notes for ${{ github.ref_name }}
+        id: extract
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "Tag version: ${VERSION}"
+          if ! patchnotes CHANGELOG.md --quiet show "${VERSION}"; then
+            echo "::error file=CHANGELOG.md::No changelog entry for version ${VERSION} \
+          (tag ${GITHUB_REF_NAME}). Add a '## [${VERSION}] - YYYY-MM-DD' section." >&2
+            exit 1
+          fi
+          patchnotes CHANGELOG.md show "${VERSION}" > release-notes.txt
+          cat release-notes.txt
+          echo "notes-file=release-notes.txt" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release-notes.txt
+
   build-wheels:
     name: wheels (${{ matrix.os }})
+    needs: verify-changelog
     strategy:
       fail-fast: false
       matrix:
@@ -29,6 +62,7 @@ jobs:
 
   build-sdist:
     name: sdist
+    needs: verify-changelog
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -64,3 +98,27 @@ jobs:
           # A release uploads several wheels; if one lands and a later one
           # fails, a re-run would otherwise abort on the already-present file.
           skip-existing: true
+
+  github-release:
+    name: create GitHub Release
+    needs: [verify-changelog, publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # required to create the release
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Assemble release
+        run: |
+          mkdir -p dist
+          # -o binds looser than -a, so the group parens are load-bearing here.
+          find artifacts \( -name '*.whl' -o -name '*.tar.gz' \) -exec cp {} dist/ \;
+          ls -la dist/
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body_path: artifacts/release-notes/release-notes.txt
+          files: dist/*
+          fail_on_unmatched_files: true

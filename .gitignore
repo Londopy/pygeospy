@@ -16,8 +16,6 @@ venv/
 env/
 .Python
 pip-wheel-metadata/
-*.whl
-*.tar.gz
 
 # Rust / Cargo
 _rustcore/target/
@@ -56,15 +54,15 @@ Thumbs.db
 site/
 docs/_build/
 
-# pygeospy runtime artefacts
+# pygeospy runtime artefacts (default export dir + stray root-level exports)
 pygeospy_output/
-*.gpx
-*.kml
-*.kmz
-*.geojson
-*_map.html
-*_report.html
-*_report.md
+/*.gpx
+/*.kml
+/*.kmz
+/*.geojson
+/*_map.html
+/*_report.html
+/*_report.md
 
 # API keys / secrets — NEVER commit these
 .env
@@ -80,4 +78,19 @@ api_keys.txt
 
 # Cache
 .cache/
-~/.cache/pygeospy/
+# NOTE: the runtime API cache lives outside the repo (platform-native dir,
+# see pygeospy/_cache.py) so it needs no ignore rule here.
+
+# Virtualenvs (additional common names)
+.venv*/
+ENV/
+
+# Editors / OS (additional)
+*.bak
+desktop.ini
+
+# Local tool state
+.tox/
+.nox/
+.hypothesis/
+.python-version

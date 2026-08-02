@@ -4,7 +4,9 @@
 > Given any image, coordinates, IP, or set of clues — produce a location.
 
 [![PyPI](https://img.shields.io/pypi/v/pygeospy)](https://pypi.org/project/pygeospy/)
+[![CI](https://github.com/Londopy/pygeospy/actions/workflows/ci.yml/badge.svg)](https://github.com/Londopy/pygeospy/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://python.org)
+[![Platforms](https://img.shields.io/badge/platforms-linux%20%7C%20macos%20%7C%20windows-lightgrey)](https://pypi.org/project/pygeospy/#files)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-core-orange)](https://rustlang.org)
 
@@ -16,12 +18,31 @@
 pip install pygeospy
 ```
 
-For optional heavy dependencies (vision, OCR, audio, etc.):
+Prebuilt wheels are published for **Linux (x86-64), macOS (Apple Silicon), and
+Windows (x86-64)** on CPython 3.10+. On those platforms the Rust core is included
+and no toolchain is needed. Anywhere else, pip builds from the source
+distribution, which requires a [Rust toolchain](https://rustup.rs); if the build
+is skipped or fails, the library still imports and runs on its pure-Python
+fallbacks (see [Rust core](#building-the-rust-core)).
+
+Optional heavy dependencies (vision, OCR, audio, etc.) live behind extras:
 
 ```bash
 pip install "pygeospy[all]"         # everything
 pip install "pygeospy[coords,exif]" # pick modules
 ```
+
+Verify the install — and whether the Rust core is active:
+
+```bash
+pygeospy info
+# pygeospy v0.2.1
+# Rust core (_rustcore): ✓ available
+```
+
+> Run this from **outside** a checkout of this repository. From the repo root the
+> local `pygeospy/` source directory shadows the installed package, and you will
+> see the pure-Python fallback instead of the wheel you just installed.
 
 ---
 
@@ -177,10 +198,21 @@ pygeospy/
 │   ├── test_sar.py
 │   ├── test_terrain.py
 │   └── test_pipeline.py
+├── scripts/
+│   ├── check_encoding.py    # CI guard: no NUL bytes / valid UTF-8
+│   └── release.py           # bump changelog + versions together
+├── .github/workflows/
+│   ├── ci.yml               # tests (3 OS x 3 Python), Rust build, lint, changelog
+│   └── release.yml          # wheels + sdist -> PyPI (OIDC) -> GitHub Release
 ├── pyproject.toml
+├── CHANGELOG.md             # Keep a Changelog, validated by patchnotes
 ├── Makefile
 └── README.md
 ```
+
+The compiled extension is installed as `pygeospy._rustcore` (inside the package),
+not as a top-level module — so the `_rustcore/` crate directory in the repo root
+cannot shadow it.
 
 ---
 
@@ -231,19 +263,34 @@ print(result.candidate_countries[:3])
 
 ## Building the Rust Core
 
-The Rust core compiles to a single `.pyd`/`.so` file that works on Python 3.10+.
-If Rust is unavailable, **all modules fall back to pure-Python automatically** (with a `RuntimeWarning` at import).
+The Rust core builds to a single abi3 extension — `pygeospy/_rustcore.*.so` on
+Linux/macOS, `pygeospy/_rustcore.*.pyd` on Windows — that works across Python
+3.10+ without recompiling per version.
+
+If the extension is missing, **every module falls back to pure Python
+automatically** (with a `RuntimeWarning` at import). Results are identical; only
+the batch-heavy paths are slower. Nothing is unavailable without Rust.
 
 ```bash
-# Prerequisites
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# Prerequisites: a Rust toolchain (https://rustup.rs) and maturin
 pip install maturin
 
-# Development build (fast, unoptimised)
-maturin develop
+# Development build — installs into the active virtualenv.
+# NOTE: maturin develop requires an ACTIVATED virtualenv; it will not install
+# into a bare system Python.
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+maturin develop --release
 
-# Release build (optimised)
-maturin build --release
+# Or build a wheel and install it
+maturin build --release -o dist
+pip install dist/*.whl
+```
+
+Check which backend is live:
+
+```python
+from pygeospy._utils import RUST_AVAILABLE
+print(RUST_AVAILABLE)   # True once the extension is built and importable
 ```
 
 ---
@@ -263,9 +310,18 @@ v.set_backend("gpt4v", api_key="sk-...")
 # Install: https://ollama.ai  then: ollama pull llava:13b
 v.set_backend("llava", base_url="http://localhost:11434", model="llava:13b")
 
-# Rule-based only (no model)
+# Rule-based only (no model) — this is the DEFAULT
 v.set_backend("none")
 ```
+
+**What the backend actually determines.** Visual clue extraction (brick bond,
+signage, vegetation, vehicles) is performed by the vision model, not by pygeospy.
+With `"none"` — the default — `visual.extract_clues()` returns little or nothing,
+and pipeline runs on an image with no EXIF GPS will find few clues. The
+brick-wall example below is the plumbing working end to end with a model
+attached; the inference quality is the model's, and the clue-to-country mapping
+is a coarse keyword table, not a trained geolocator. Treat candidate countries as
+a ranked hypothesis to investigate, not an answer.
 
 ---
 
@@ -292,7 +348,49 @@ pip install pytest
 PYTHONPATH=. pytest tests/ -v
 ```
 
-71 tests, no network required.
+71 tests, no network required. They exercise the pure-Python paths by default;
+CI additionally runs the whole suite against a built Rust core on Linux, macOS,
+and Windows.
+
+### Other checks CI runs
+
+```bash
+pip install ruff patchnotes
+
+ruff check pygeospy/ tests/       # lint
+python scripts/check_encoding.py  # no NUL bytes / valid UTF-8 in sources
+patchnotes CHANGELOG.md validate --strict
+```
+
+`scripts/check_encoding.py` exists because a stray run of NUL bytes appended to
+`_rustcore/src/sar.rs` once made cargo reject the file outright, silently
+disabling the Rust core for months while the pure-Python fallback covered for it.
+
+---
+
+## Roadmap
+
+- Web UI (FastAPI + Leaflet)
+- `pygeospy.crowd` — crowd-sourced Wikidata location signals
+- `pygeospy.timeline` — multi-image temporal reconstruction
+- QGIS plugin
+- Wheels for Linux aarch64 and macOS x86-64
+
+---
+
+## Contributing
+
+Changes are tracked in [`CHANGELOG.md`](CHANGELOG.md), which follows
+[Keep a Changelog](https://keepachangelog.com) and is validated in CI with
+[patchnotes](https://github.com/Londopy/patchnotes). Add your entry under
+`## [Unreleased]` using one of the standard sections (`Added`, `Changed`,
+`Deprecated`, `Removed`, `Fixed`, `Security`) — a non-standard heading or a
+non-ISO date fails the build with an annotation on the offending line.
+
+On release, `python scripts/release.py <version>` moves the `[Unreleased]` block
+into a dated release and syncs the version across `pyproject.toml` and
+`pygeospy/__init__.py` (CI fails if those drift). The tag's changelog entry then
+becomes the GitHub Release body automatically.
 
 ---
 

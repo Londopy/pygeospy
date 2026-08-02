@@ -4,20 +4,36 @@ All notable changes to **pygeospy** will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/).
 
----
-
 ## [Unreleased]
 
-### Planned
-- Web UI (FastAPI + Leaflet)
-- pygeospy.crowd — crowd-sourced Wikidata location signals
-- pygeospy.timeline — multi-image temporal reconstruction
-- QGIS plugin
-- PyPI release
+### Fixed
 
----
+- Source distribution was rejected by PyPI with
+  `400 License-File LICENSE does not exist in distribution file`. maturin writes
+  `License-File: LICENSE` into the metadata and bundles the file into wheels, but
+  does not copy it into the sdist tarball; it is now included explicitly via
+  `[tool.maturin] include`. The 0.2.1 wheels published fine — only the sdist was
+  missing, so source installs (any platform without a prebuilt wheel) failed.
 
-## [0.2.1] — 2026-08-01
+### Added
+
+- Changelog is validated in CI with [patchnotes](https://github.com/Londopy/patchnotes)
+  (`--strict`), which annotates problems inline on the PR diff.
+- GitHub Releases are now created from the changelog entry for the tagged version,
+  so release notes and `CHANGELOG.md` cannot drift apart.
+- `scripts/release.py` bumps `CHANGELOG.md`, `pyproject.toml`, and
+  `pygeospy/__init__.py` together, which CI now enforces are in sync.
+
+### Changed
+
+- `.gitignore`: removed a meaningless `~/.cache/pygeospy/` rule (ignore paths are
+  repo-relative), scoped over-broad `*.geojson`/`*.gpx`/`*_report.md` globs to the
+  repository root so genuine project files are not silently ignored, and dropped
+  the blanket `*.tar.gz` that could hide test fixtures.
+- README: corrected the install and build instructions, documented the
+  pure-Python fallback honestly, and moved the roadmap out of the changelog.
+
+## [0.2.1] - 2026-08-01
 
 ### Fixed
 - **The Rust core never compiled.** `_rustcore/src/sar.rs` carried 25 trailing
@@ -63,11 +79,11 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - Publishing now uses PyPI Trusted Publishing (OIDC) instead of a long-lived
   API token; the release workflow references no secrets at all.
 
-### Internal
+### Changed
 - Cleaned ~35 unused imports, 4 dead local variables, and a stray `import pyotp`
   in the Plus Code fallback path; `ruff check` is now clean.
 
-## [0.2.0] — 2026-04-23
+## [0.2.0] - 2026-04-23
 
 ### Added
 
@@ -125,9 +141,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - `pygeospy.solar.analyze_shadow()` returns full `SolarResult` with clue objects
 - All modules gracefully degrade when optional deps are missing
 
----
-
-## [0.1.0] — Initial release
+## [0.1.0] - 2026-04-23
 
 ### Added
 
@@ -189,3 +203,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - `Makefile` — build, test, lint, clean targets
 - `pyproject.toml` — maturin + hatch build system
 - Full test suite (pytest, ~60 tests, no network required)
+
+[Unreleased]: https://github.com/Londopy/pygeospy/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/Londopy/pygeospy/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/Londopy/pygeospy/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/Londopy/pygeospy/releases/tag/v0.1.0

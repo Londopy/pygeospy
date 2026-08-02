@@ -83,3 +83,44 @@ jobs:
         # A stray NUL byte in _rustcore/src/sar.rs silently broke every Rust
         # build; cargo rejects the file outright. Catch it here, cheaply.
         run: python scripts/check_encoding.py
+
+  changelog:
+    name: validate changelog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install patchnotes
+      # Emits ::error/::warning annotations pinned to the exact line, so a
+      # malformed changelog shows up inline on the PR diff.
+      - name: Validate CHANGELOG.md
+        run: patchnotes CHANGELOG.md validate --strict
+      - name: Check the changelog version matches the package version
+        run: |
+          python - <<'EOF'
+          import json, pathlib, subprocess, sys, tomllib
+
+          pyproject = tomllib.loads(pathlib.Path("pyproject.toml").read_text())
+          pkg_version = pyproject["project"]["version"]
+
+          latest = json.loads(
+              subprocess.run(
+                  ["patchnotes", "CHANGELOG.md", "--format", "json", "latest"],
+                  capture_output=True, text=True, check=True,
+              ).stdout
+          )
+          cl_version = latest["version"]
+
+          print(f"pyproject version: {pkg_version}")
+          print(f"changelog latest : {cl_version}")
+          if pkg_version != cl_version:
+              print(
+                  f"::error file=CHANGELOG.md::pyproject version {pkg_version} has no "
+                  f"matching changelog entry (latest documented release is {cl_version}). "
+                  f"Add a '## [{pkg_version}] - YYYY-MM-DD' section before releasing.",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+          EOF
