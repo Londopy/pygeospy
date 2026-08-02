@@ -60,6 +60,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   plus a Rust-core wheel-build job (asserts the compiled extension actually
   loads on each OS) and ruff lint.
 - `.gitattributes` normalising line endings across platforms.
+- Publishing now uses PyPI Trusted Publishing (OIDC) instead of a long-lived
+  API token; the release workflow references no secrets at all.
 
 ### Internal
 - Cleaned ~35 unused imports, 4 dead local variables, and a stray `import pyotp`

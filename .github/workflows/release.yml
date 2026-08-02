@@ -45,13 +45,22 @@ jobs:
   publish:
     needs: [build-wheels, build-sdist]
     runs-on: ubuntu-latest
+    # Publishes via PyPI Trusted Publishing (OIDC) — no API token required.
+    # Configured on PyPI under: pygeospy -> Publishing -> GitHub publisher
+    # (owner: Londopy, repo: pygeospy, workflow: release.yml).
+    permissions:
+      id-token: write       # REQUIRED: mints the short-lived OIDC token
+      contents: read
     steps:
       - uses: actions/download-artifact@v4
         with:
           path: dist
           merge-multiple: true
-      - run: pip install twine
-      - run: twine upload dist/*
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      - name: List artifacts to be published
+        run: ls -la dist/
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # A release uploads several wheels; if one lands and a later one
+          # fails, a re-run would otherwise abort on the already-present file.
+          skip-existing: true
