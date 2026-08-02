@@ -130,11 +130,16 @@ pygeospy = "pygeospy.cli:main"
 # ── Maturin / Rust extension config ──────────────────────────────────────────
 
 [tool.maturin]
-python-source    = "."           # Python package is in pygeospy/
+python-source    = "."                      # Python package lives at ./pygeospy/
 manifest-path    = "_rustcore/Cargo.toml"
-module-name      = "_rustcore"
+module-name      = "pygeospy._rustcore"     # extension ships INSIDE the package
 features         = ["pyo3/extension-module"]
-# The compiled .so is placed at pygeospy/_rustcore.*.so after `maturin develop`
+# `module-name` must be the dotted Python path of the extension. When it was a
+# bare "_rustcore", maturin resolved the sibling ./_rustcore/ *crate* directory
+# as the Python source root and shipped a wheel with no `pygeospy` package in it
+# at all. Qualifying it as pygeospy._rustcore packages both, and stops the crate
+# directory from shadowing the compiled module when running from the repo root.
+# Result: pygeospy/_rustcore.abi3.so (or .pyd) after `maturin develop`.
 
 # ── pytest ────────────────────────────────────────────────────────────────────
 

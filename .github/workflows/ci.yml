@@ -48,6 +48,11 @@ jobs:
         run: |
           pip install maturin pytest
           maturin build --release -o dist
+      - name: Show wheel contents
+        # Makes packaging faults obvious at a glance. A wheel that ships the
+        # extension but no `pygeospy/` package installs fine and then fails at
+        # import time, which is a confusing way to find out.
+        run: python -m zipfile -l dist/*.whl
       - name: Install wheel
         run: pip install dist/*.whl
       - name: Verify Rust core actually loaded

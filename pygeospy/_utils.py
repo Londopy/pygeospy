@@ -19,20 +19,24 @@ def _import_rustcore():
     Returns the module on success, None on failure (pure-Python fallback mode).
     """
     try:
-        import _rustcore
+        from pygeospy import _rustcore
     except ImportError:
-        logger.warning(
-            "_rustcore not found — running in pure-Python fallback mode. "
-            "Run `maturin develop` or `pip install -e .` to build Rust extensions."
-        )
-        return None
-    # Guard against the _rustcore/ *source* directory being picked up as an
-    # empty namespace package when running from the repo root. A real build
-    # is a compiled extension and exposes the submodules.
+        try:
+            # Legacy layout: wheels built before 0.2.1 installed the extension
+            # at the top level rather than inside the package.
+            import _rustcore  # type: ignore[no-redef]
+        except ImportError:
+            logger.warning(
+                "_rustcore not found — running in pure-Python fallback mode. "
+                "Run `maturin develop` or `pip install -e .` to build Rust extensions."
+            )
+            return None
+    # A real build is a compiled extension exposing the five submodules. Anything
+    # else (e.g. a stale or partial build) falls back rather than failing later.
     if getattr(_rustcore, "coords", None) is None:
         logger.warning(
-            "_rustcore import resolved to the source directory, not a compiled "
-            "extension — running in pure-Python fallback mode."
+            "_rustcore resolved to something that is not a compiled extension "
+            "— running in pure-Python fallback mode."
         )
         return None
     return _rustcore

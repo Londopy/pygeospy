@@ -26,6 +26,12 @@ This project adheres to [Semantic Versioning](https://semver.org/).
   has silently fallen back to pure Python. Bytes stripped; a CI guard
   (`scripts/check_encoding.py`) now fails the build if NUL bytes or invalid
   UTF-8 reappear in any source file.
+- **Wheels shipped without the Python package.** `[tool.maturin] module-name`
+  was a bare `"_rustcore"`, so maturin resolved the sibling `_rustcore/` *crate*
+  directory as the Python source root and built wheels containing only the
+  compiled extension — installing fine, then failing at `import pygeospy`.
+  Now qualified as `pygeospy._rustcore`, which packages both and stops the crate
+  directory shadowing the compiled module when running from the repo root.
 - **Cross-platform packaging**: release workflow now uploads wheels from the correct
   path and builds an sdist — previously only a Windows wheel reached PyPI, making
   `pip install pygeospy` fail on Linux and macOS.
