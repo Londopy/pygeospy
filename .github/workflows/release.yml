@@ -10,8 +10,6 @@ jobs:
   verify-changelog:
     name: verify changelog matches tag
     runs-on: ubuntu-latest
-    outputs:
-      notes: ${{ steps.extract.outputs.notes-file }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -19,8 +17,7 @@ jobs:
           python-version: "3.12"
       - run: pip install patchnotes
       - run: patchnotes CHANGELOG.md validate --strict
-      - name: Extract release notes for ${{ github.ref_name }}
-        id: extract
+      - name: Confirm a changelog entry exists for ${{ github.ref_name }}
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           echo "Tag version: ${VERSION}"
@@ -29,13 +26,12 @@ jobs:
           (tag ${GITHUB_REF_NAME}). Add a '## [${VERSION}] - YYYY-MM-DD' section." >&2
             exit 1
           fi
-          patchnotes CHANGELOG.md show "${VERSION}" > release-notes.txt
-          cat release-notes.txt
-          echo "notes-file=release-notes.txt" >> "$GITHUB_OUTPUT"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-notes
-          path: release-notes.txt
+          patchnotes CHANGELOG.md show "${VERSION}"
+        # NOTE: deliberately does NOT upload the notes as an artifact. The
+        # publish job downloads artifacts with merge-multiple into dist/, and
+        # twine rejects any non-distribution file it finds there
+        # ("InvalidDistribution: Unknown distribution format"). The release job
+        # regenerates the notes from the checkout instead.
 
   build-wheels:
     name: wheels (${{ matrix.os }})
@@ -92,6 +88,18 @@ jobs:
           merge-multiple: true
       - name: List artifacts to be published
         run: ls -la dist/
+      - name: Ensure dist/ contains only distributions
+        # twine aborts the whole upload on any non-distribution file
+        # ("InvalidDistribution: Unknown distribution format"). Fail here with a
+        # clear message rather than mid-upload, when some files may already be live.
+        run: |
+          stray="$(find dist -type f ! -name '*.whl' ! -name '*.tar.gz')"
+          if [ -n "${stray}" ]; then
+            echo "::error::Non-distribution files found in dist/:"
+            echo "${stray}"
+            exit 1
+          fi
+          echo "dist/ is clean: $(find dist -type f | wc -l) distribution file(s)"
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -106,6 +114,16 @@ jobs:
     permissions:
       contents: write        # required to create the release
     steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install patchnotes
+      - name: Render release notes from the changelog
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          patchnotes CHANGELOG.md show "${VERSION}" > "${RUNNER_TEMP}/release-notes.txt"
+          cat "${RUNNER_TEMP}/release-notes.txt"
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
@@ -119,6 +137,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ github.ref_name }}
-          body_path: artifacts/release-notes/release-notes.txt
+          body_path: ${{ runner.temp }}/release-notes.txt
           files: dist/*
           fail_on_unmatched_files: true

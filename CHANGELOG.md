@@ -8,6 +8,14 @@ All notable changes to **pygeospy** will be documented here. Format follows [Kee
 
 ### Fixed
 
+- Release workflow aborted the PyPI upload with
+  `InvalidDistribution: Unknown distribution format: 'release-notes.txt'`. The
+  publish job downloads artifacts with `merge-multiple` into `dist/`, so the
+  release-notes artifact landed alongside the wheels and twine refused the whole
+  batch. Notes are now rendered from the checkout in the release job instead of
+  being passed as an artifact, and the publish job asserts `dist/` holds only
+  `.whl`/`.tar.gz` before uploading.
+
 - Source distribution was rejected by PyPI with `400 License-File LICENSE does not exist in distribution file`. maturin writes `License-File: LICENSE` into the metadata and bundles the file into wheels, but does not copy it into the sdist tarball; it is now included explicitly via `[tool.maturin] include`. The 0.2.1 wheels published fine — only the sdist was missing, so source installs (any platform without a prebuilt wheel) failed.
 
 ### Added
