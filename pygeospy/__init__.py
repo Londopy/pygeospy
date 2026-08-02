@@ -32,7 +32,7 @@ Modules
   pygeospy.pipeline  — Unified analysis engine (v0.2)    (Python)
 """
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 __author__  = "pygeospy contributors"
 __license__ = "MIT"
 

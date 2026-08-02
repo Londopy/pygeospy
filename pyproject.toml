@@ -6,7 +6,7 @@ build-backend = "maturin"
 
 [project]
 name            = "pygeospy"
-version         = "0.2.1"
+version         = "0.2.2"
 description     = "Python GEOINT/OSINT library with Rust-accelerated core"
 readme          = "README.md"
 license         = { text = "MIT" }
