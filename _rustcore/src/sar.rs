@@ -264,4 +264,3 @@ pub fn register(parent: &Bound<'_, PyModule>) -> PyResult<()> {
     parent.add_submodule(&m)?;
     Ok(())
 }
-                         

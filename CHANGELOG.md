@@ -20,6 +20,12 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## [0.2.1] — 2026-08-01
 
 ### Fixed
+- **The Rust core never compiled.** `_rustcore/src/sar.rs` carried 25 trailing
+  NUL bytes (introduced in f210396), so cargo rejected the file with
+  "unknown start of token: \u{0}" on every platform. Every build since then
+  has silently fallen back to pure Python. Bytes stripped; a CI guard
+  (`scripts/check_encoding.py`) now fails the build if NUL bytes or invalid
+  UTF-8 reappear in any source file.
 - **Cross-platform packaging**: release workflow now uploads wheels from the correct
   path and builds an sdist — previously only a Windows wheel reached PyPI, making
   `pip install pygeospy` fail on Linux and macOS.

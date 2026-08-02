@@ -74,3 +74,7 @@ jobs:
           python-version: "3.12"
       - run: pip install ruff
       - run: ruff check pygeospy/ tests/
+      - name: Reject NUL bytes / invalid UTF-8 in source files
+        # A stray NUL byte in _rustcore/src/sar.rs silently broke every Rust
+        # build; cargo rejects the file outright. Catch it here, cheaply.
+        run: python scripts/check_encoding.py
